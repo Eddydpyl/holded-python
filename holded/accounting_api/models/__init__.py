@@ -2,7 +2,7 @@
 Models for the Accounting API.
 """
 
-from .chart_of_accounts import Account, AccountListResponse
+from .chart_of_accounts import Account, AccountCreate, AccountListResponse
 from .daily_ledger import (
     DailyLedgerListParams,
     Entry,
@@ -24,6 +24,7 @@ __all__ = [
     "EntryListResponse",
     # Chart of Accounts
     "Account",
+    "AccountCreate",
     "AccountListResponse",
 ]
 
