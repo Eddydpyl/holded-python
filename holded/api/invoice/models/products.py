@@ -4,7 +4,7 @@ Models for the Products API.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field, field_validator
 
@@ -126,7 +126,7 @@ class ProductCreate(BaseModel):
     warehouses: Optional[List[ProductWarehouse]] = Field(default=None, description="Product warehouse stock")
     weight: Optional[float] = Field(default=None, description="Weight in kg")
     dimensions: Optional[Dict[str, float]] = Field(default=None, description="Dimensions (length, width, height)")
-    custom_fields: Optional[Dict[str, Any]] = Field(default=None, description="Custom fields")
+    custom_fields: Optional[Dict[str, Union[str, int, float, bool, None, Dict[str, Union[str, int, float, bool, None]], List[Union[str, int, float, bool, None]]]]] = Field(default=None, description="Custom fields")
     tags: Optional[List[str]] = Field(default=None, description="Product tags")
     brand: Optional[str] = Field(default=None, description="Product brand")
     manufacturer: Optional[str] = Field(default=None, description="Product manufacturer")
@@ -166,7 +166,7 @@ class ProductUpdate(BaseModel):
     warehouses: Optional[List[ProductWarehouse]] = Field(default=None, description="Product warehouse stock")
     weight: Optional[float] = Field(default=None, description="Weight in kg")
     dimensions: Optional[Dict[str, float]] = Field(default=None, description="Dimensions (length, width, height)")
-    custom_fields: Optional[Dict[str, Any]] = Field(default=None, description="Custom fields")
+    custom_fields: Optional[Dict[str, Union[str, int, float, bool, None, Dict[str, Union[str, int, float, bool, None]], List[Union[str, int, float, bool, None]]]]] = Field(default=None, description="Custom fields")
     tags: Optional[List[str]] = Field(default=None, description="Product tags")
     brand: Optional[str] = Field(default=None, description="Product brand")
     manufacturer: Optional[str] = Field(default=None, description="Product manufacturer")
@@ -201,7 +201,7 @@ class Product(BaseModel):
     warehouses: Optional[List[ProductWarehouse]] = Field(default=None, description="Product warehouse stock")
     weight: Optional[float] = Field(default=None, description="Weight in kg")
     dimensions: Optional[Dict[str, float]] = Field(default=None, description="Dimensions (length, width, height)")
-    custom_fields: Optional[Dict[str, Any]] = Field(default=None, description="Custom fields")
+    custom_fields: Optional[Dict[str, Union[str, int, float, bool, None, Dict[str, Union[str, int, float, bool, None]], List[Union[str, int, float, bool, None]]]]] = Field(default=None, description="Custom fields")
     tags: Optional[List[str]] = Field(default=None, description="Product tags")
     brand: Optional[str] = Field(default=None, description="Product brand")
     manufacturer: Optional[str] = Field(default=None, description="Product manufacturer")
@@ -384,5 +384,5 @@ class ProductImportResponse(BaseResponse):
     """Response model for importing products."""
 
     imported: int = Field(..., description="Number of products imported")
-    errors: Optional[List[Dict[str, Any]]] = Field(default=None, description="Import errors")
+    errors: Optional[List[Dict[str, Union[str, int, float, bool, None]]]] = Field(default=None, description="Import errors")
     message: Optional[str] = Field(default=None, description="Response message")

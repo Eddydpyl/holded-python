@@ -4,7 +4,7 @@ Tests for the Bookings API.
 
 import pytest
 
-from holded.api.crm.models.bookings import BookingCreate, BookingCustomField, BookingUpdate
+from holded.api.crm.models.bookings import BookingCreate, BookingUpdate
 
 
 class TestBookingsResource:
@@ -78,10 +78,10 @@ class TestBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking",
+                    "email": "test@example.com",
+                },
             )
 
             result = client.bookings.create(booking_data)
@@ -131,10 +131,10 @@ class TestBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking Get"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking Get",
+                    "email": "test@example.com",
+                },
             )
 
             created = client.bookings.create(booking_data)
@@ -186,10 +186,10 @@ class TestBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking Update"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking Update",
+                    "email": "test@example.com",
+                },
             )
 
             created = client.bookings.create(booking_data)
@@ -199,10 +199,10 @@ class TestBookingsResource:
 
             # Update the booking
             update_data = BookingUpdate(
-                custom_fields=[
-                    BookingCustomField(name="name", value="Updated Test Booking"),
-                    BookingCustomField(name="email", value="updated@example.com"),
-                ],
+                custom_fields={
+                    "name": "Updated Test Booking",
+                    "email": "updated@example.com",
+                },
             )
             result = client.bookings.update(booking_id, update_data)
 
@@ -248,10 +248,10 @@ class TestBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking Cancel"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking Cancel",
+                    "email": "test@example.com",
+                },
             )
 
             created = client.bookings.create(booking_data)
@@ -339,10 +339,10 @@ class TestAsyncBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking Async"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking Async",
+                    "email": "test@example.com",
+                },
             )
 
             result = await async_client.bookings.create(booking_data)
@@ -393,10 +393,10 @@ class TestAsyncBookingsResource:
                 date_time=int(time.time() * 1000) + 86400000,  # Tomorrow
                 timezone="Europe/Madrid",
                 language="es",
-                custom_fields=[
-                    BookingCustomField(name="name", value="Test Booking Get Async"),
-                    BookingCustomField(name="email", value="test@example.com"),
-                ],
+                custom_fields={
+                    "name": "Test Booking Get Async",
+                    "email": "test@example.com",
+                },
             )
 
             created = await async_client.bookings.create(booking_data)

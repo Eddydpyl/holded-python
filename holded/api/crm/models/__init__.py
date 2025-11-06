@@ -5,7 +5,6 @@ Data models for the Holded CRM API.
 from .bookings import (
     Booking,
     BookingCreate,
-    BookingCustomField,
     BookingListResponse,
     BookingResponse,
     BookingUpdate,
@@ -74,7 +73,6 @@ __all__ = [
     "Booking",
     "BookingCreate",
     "BookingUpdate",
-    "BookingCustomField",
     "LocationResponse",
     "LocationListResponse",
     "SlotListResponse",

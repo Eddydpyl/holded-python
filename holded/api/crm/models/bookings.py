@@ -2,18 +2,11 @@
 Models for the Bookings API.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field
 
 from ...models import BaseModel, BaseResponse
-
-
-class BookingCustomField(BaseModel):
-    """Model for a booking custom field."""
-
-    name: str = Field(..., description="Custom field name")
-    value: Any = Field(..., description="Custom field value")
 
 
 class BookingCreate(BaseModel):
@@ -21,23 +14,57 @@ class BookingCreate(BaseModel):
 
     location_id: str = Field(..., alias="locationId", description="Location ID")
     service_id: str = Field(..., alias="serviceId", description="Service ID")
-    date_time: int = Field(..., alias="dateTime", description="Booking date and time (timestamp)")
+    date_time: int = Field(
+        ..., alias="dateTime", description="Booking date and time (timestamp)"
+    )
     timezone: str = Field(..., description="Timezone (e.g., 'Europe/Madrid')")
     language: str = Field(..., description="Language code (e.g., 'es', 'en')")
-    custom_fields: List[BookingCustomField] = Field(..., alias="customFields", description="Custom fields")
+    custom_fields: Dict[
+        str,
+        Union[
+            str,
+            int,
+            float,
+            bool,
+            None,
+            Dict[str, Union[str, int, float, bool, None]],
+            List[Union[str, int, float, bool, None]],
+        ],
+    ] = Field(..., alias="customFields", description="Custom fields")
 
 
 class BookingUpdate(BaseModel):
     """Model for updating a booking."""
 
-    location_id: Optional[str] = Field(default=None, alias="locationId", description="Location ID")
-    service_id: Optional[str] = Field(default=None, alias="serviceId", description="Service ID")
-    date_time: Optional[int] = Field(default=None, alias="dateTime", description="Booking date and time (timestamp)")
-    timezone: Optional[str] = Field(default=None, description="Timezone (e.g., 'Europe/Madrid')")
-    language: Optional[str] = Field(default=None, description="Language code (e.g., 'es', 'en')")
-    custom_fields: Optional[List[BookingCustomField]] = Field(
-        default=None, alias="customFields", description="Custom fields"
+    location_id: Optional[str] = Field(
+        default=None, alias="locationId", description="Location ID"
     )
+    service_id: Optional[str] = Field(
+        default=None, alias="serviceId", description="Service ID"
+    )
+    date_time: Optional[int] = Field(
+        default=None, alias="dateTime", description="Booking date and time (timestamp)"
+    )
+    timezone: Optional[str] = Field(
+        default=None, description="Timezone (e.g., 'Europe/Madrid')"
+    )
+    language: Optional[str] = Field(
+        default=None, description="Language code (e.g., 'es', 'en')"
+    )
+    custom_fields: Optional[
+        Dict[
+            str,
+            Union[
+                str,
+                int,
+                float,
+                bool,
+                None,
+                Dict[str, Union[str, int, float, bool, None]],
+                List[Union[str, int, float, bool, None]],
+            ],
+        ]
+    ] = Field(default=None, alias="customFields", description="Custom fields")
 
 
 class Location(BaseModel):
@@ -76,14 +103,31 @@ class Booking(BaseModel):
     """Booking model."""
 
     id: str = Field(..., description="Booking ID")
-    location_id: Optional[str] = Field(default=None, alias="locationId", description="Location ID")
-    service_id: Optional[str] = Field(default=None, alias="serviceId", description="Service ID")
-    date_time: Optional[int] = Field(default=None, alias="dateTime", description="Booking date and time (timestamp)")
+    location_id: Optional[str] = Field(
+        default=None, alias="locationId", description="Location ID"
+    )
+    service_id: Optional[str] = Field(
+        default=None, alias="serviceId", description="Service ID"
+    )
+    date_time: Optional[int] = Field(
+        default=None, alias="dateTime", description="Booking date and time (timestamp)"
+    )
     timezone: Optional[str] = Field(default=None, description="Timezone")
     language: Optional[str] = Field(default=None, description="Language code")
-    custom_fields: Optional[List[Dict[str, Any]]] = Field(
-        default=None, alias="customFields", description="Custom fields"
-    )
+    custom_fields: Optional[
+        Dict[
+            str,
+            Union[
+                str,
+                int,
+                float,
+                bool,
+                None,
+                Dict[str, Union[str, int, float, bool, None]],
+                List[Union[str, int, float, bool, None]],
+            ],
+        ]
+    ] = Field(default=None, alias="customFields", description="Custom fields")
 
 
 class BookingResponse(BaseResponse):
