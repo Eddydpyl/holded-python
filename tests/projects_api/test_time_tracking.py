@@ -2,10 +2,11 @@
 Tests for the Time Tracking API.
 """
 
-import pytest
 import time
 
-from holded.projects_api.models.time_tracking import TimeTrackingCreate, TimeTrackingUpdate
+import pytest
+
+from holded.api.projects.models.time_tracking import TimeTrackingCreate, TimeTrackingUpdate
 
 
 class TestTimeTrackingResource:
@@ -21,7 +22,7 @@ class TestTimeTrackingResource:
     def test_list_project_times(self, client):
         """Test listing time tracking entries for a project."""
         # First, create a project
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
         project_data = ProjectCreate(
             name=f"Test Project for Time {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
@@ -49,10 +50,11 @@ class TestTimeTrackingResource:
     def test_create_time_tracking(self, client):
         """Test creating a time tracking entry."""
         # First, create a project
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Create {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Create {test_id}",
         )
 
         try:
@@ -90,10 +92,11 @@ class TestTimeTrackingResource:
     def test_get_time_tracking(self, client):
         """Test getting a time tracking entry."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Get {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Get {test_id}",
         )
 
         try:
@@ -133,10 +136,11 @@ class TestTimeTrackingResource:
     def test_update_time_tracking(self, client):
         """Test updating a time tracking entry."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Update {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Update {test_id}",
         )
 
         try:
@@ -181,10 +185,11 @@ class TestTimeTrackingResource:
     def test_delete_time_tracking(self, client):
         """Test deleting a time tracking entry."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Delete {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Delete {test_id}",
         )
 
         try:
@@ -234,10 +239,11 @@ class TestAsyncTimeTrackingResource:
     async def test_list_project_times(self, async_client):
         """Test listing time tracking entries for a project asynchronously."""
         # First, create a project
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Async {test_id}",
         )
 
         try:
@@ -263,10 +269,11 @@ class TestAsyncTimeTrackingResource:
     async def test_create_time_tracking(self, async_client):
         """Test creating a time tracking entry asynchronously."""
         # First, create a project
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Create Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Create Async {test_id}",
         )
 
         try:
@@ -305,10 +312,11 @@ class TestAsyncTimeTrackingResource:
     async def test_get_time_tracking(self, async_client):
         """Test getting a time tracking entry asynchronously."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Get Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Get Async {test_id}",
         )
 
         try:
@@ -349,10 +357,11 @@ class TestAsyncTimeTrackingResource:
     async def test_update_time_tracking(self, async_client):
         """Test updating a time tracking entry asynchronously."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Update Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Update Async {test_id}",
         )
 
         try:
@@ -398,10 +407,11 @@ class TestAsyncTimeTrackingResource:
     async def test_delete_time_tracking(self, async_client):
         """Test deleting a time tracking entry asynchronously."""
         # First, create a project and time tracking entry
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Time Delete Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Time Delete Async {test_id}",
         )
 
         try:
@@ -434,4 +444,3 @@ class TestAsyncTimeTrackingResource:
                 pass
         except Exception as e:
             pytest.skip(f"Delete time tracking failed: {e}")
-

@@ -2,13 +2,15 @@
 """
 Example script demonstrating how to use the Holded API wrapper for contacts management.
 """
-import os
+
 import asyncio
+import os
 from pprint import pprint
 
-from holded.client import HoldedClient
+from holded.models.contacts import ContactCreate, ContactListParams, ContactUpdate
+
 from holded.async_client import AsyncHoldedClient
-from holded.models.contacts import ContactCreate, ContactUpdate, ContactListParams
+from holded.client import HoldedClient
 from holded.exceptions import HoldedError
 
 
@@ -39,7 +41,7 @@ def sync_example():
             email="john.doe.example@example.com",
             phone="123456789",
             type="client",
-            notes="Created via API example script"
+            notes="Created via API example script",
         )
         new_contact = client.contacts.create(contact_data)
         print(f"Created contact: {new_contact.name} with ID: {new_contact.id}")
@@ -47,15 +49,12 @@ def sync_example():
         # Get the contact details
         print("\n=== Getting contact details ===")
         contact = client.contacts.get(new_contact.id)
-        print(f"Contact details:")
+        print("Contact details:")
         pprint(vars(contact))
 
         # Update the contact
         print("\n=== Updating contact ===")
-        update_data = ContactUpdate(
-            name="John Doe (Updated)",
-            notes="Updated via API example script"
-        )
+        update_data = ContactUpdate(name="John Doe (Updated)", notes="Updated via API example script")
         updated_contact = client.contacts.update(new_contact.id, update_data)
         print(f"Updated contact: {updated_contact.name}")
 
@@ -71,7 +70,7 @@ def sync_example():
 
     except HoldedError as e:
         print(f"Error: {e.message}")
-        if hasattr(e, 'error_data') and e.error_data:
+        if hasattr(e, "error_data") and e.error_data:
             print(f"Error data: {e.error_data}")
     finally:
         client.close()
@@ -104,7 +103,7 @@ async def async_example():
             email="jane.doe.example@example.com",
             phone="987654321",
             type="client",
-            notes="Created via async API example script"
+            notes="Created via async API example script",
         )
         new_contact = await client.contacts.create(contact_data)
         print(f"Created contact: {new_contact.name} with ID: {new_contact.id}")
@@ -112,15 +111,12 @@ async def async_example():
         # Get the contact details
         print("\n=== Getting contact details (async) ===")
         contact = await client.contacts.get(new_contact.id)
-        print(f"Contact details:")
+        print("Contact details:")
         pprint(vars(contact))
 
         # Update the contact
         print("\n=== Updating contact (async) ===")
-        update_data = ContactUpdate(
-            name="Jane Doe (Updated)",
-            notes="Updated via async API example script"
-        )
+        update_data = ContactUpdate(name="Jane Doe (Updated)", notes="Updated via async API example script")
         updated_contact = await client.contacts.update(new_contact.id, update_data)
         print(f"Updated contact: {updated_contact.name}")
 
@@ -131,7 +127,7 @@ async def async_example():
 
     except HoldedError as e:
         print(f"Error: {e.message}")
-        if hasattr(e, 'error_data') and e.error_data:
+        if hasattr(e, "error_data") and e.error_data:
             print(f"Error data: {e.error_data}")
     finally:
         await client.close()
@@ -140,6 +136,6 @@ async def async_example():
 if __name__ == "__main__":
     print("Running synchronous example...")
     sync_example()
-    
+
     print("\nRunning asynchronous example...")
-    asyncio.run(async_example()) 
+    asyncio.run(async_example())

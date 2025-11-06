@@ -4,7 +4,7 @@ Tests for the Bookings API.
 
 import pytest
 
-from holded.crm_api.models.bookings import BookingCreate, BookingUpdate, BookingCustomField
+from holded.api.crm.models.bookings import BookingCreate, BookingCustomField, BookingUpdate
 
 
 class TestBookingsResource:
@@ -71,6 +71,7 @@ class TestBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -123,6 +124,7 @@ class TestBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -177,6 +179,7 @@ class TestBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -238,6 +241,7 @@ class TestBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -328,6 +332,7 @@ class TestAsyncBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -381,6 +386,7 @@ class TestAsyncBookingsResource:
                 pytest.skip("Service ID not found")
 
             import time
+
             booking_data = BookingCreate(
                 location_id=location_id,
                 service_id=service_id,
@@ -410,4 +416,3 @@ class TestAsyncBookingsResource:
                 pass
         except Exception as e:
             pytest.skip(f"Get booking failed: {e}")
-

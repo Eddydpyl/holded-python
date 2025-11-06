@@ -4,15 +4,15 @@ Tests for the Leads API.
 
 import pytest
 
-from holded.crm_api.models.leads import (
+from holded.api.crm.models.leads import (
     LeadCreate,
-    LeadUpdate,
+    LeadDateUpdate,
     LeadNoteCreate,
     LeadNoteUpdate,
+    LeadStageUpdate,
     LeadTaskCreate,
     LeadTaskUpdate,
-    LeadDateUpdate,
-    LeadStageUpdate,
+    LeadUpdate,
 )
 
 
@@ -380,6 +380,7 @@ class TestLeadsResource:
                 pytest.skip("Lead ID not found after creation")
 
             import time
+
             date_data = LeadDateUpdate(date=int(time.time() * 1000))
             result = client.leads.update_date(lead_id, date_data)
 
@@ -592,4 +593,3 @@ class TestAsyncLeadsResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Delete lead failed: {e}")
-

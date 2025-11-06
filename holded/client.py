@@ -11,6 +11,30 @@ from urllib.parse import urljoin
 import requests
 from pydantic import BaseModel
 
+from .api.accounting.resources.chart_of_accounts import ChartOfAccountsResource
+from .api.accounting.resources.daily_ledger import DailyLedgerResource
+from .api.crm.resources.bookings import BookingsResource
+from .api.crm.resources.events import EventsResource
+from .api.crm.resources.funnels import FunnelsResource
+from .api.crm.resources.leads import LeadsResource
+from .api.invoice.resources.contact_groups import ContactGroupsResource
+from .api.invoice.resources.contacts import ContactsResource
+from .api.invoice.resources.documents import DocumentsResource
+from .api.invoice.resources.expense_accounts import ExpenseAccountsResource
+from .api.invoice.resources.numbering_series import NumberingSeriesResource
+from .api.invoice.resources.payments import PaymentsResource
+from .api.invoice.resources.products import ProductsResource
+from .api.invoice.resources.remittances import RemittancesResource
+from .api.invoice.resources.sales_channels import SalesChannelsResource
+from .api.invoice.resources.services import ServicesResource
+from .api.invoice.resources.taxes import TaxesResource
+from .api.invoice.resources.treasury import TreasuryResource
+from .api.invoice.resources.warehouse import WarehouseResource
+from .api.projects.resources.projects import ProjectsResource
+from .api.projects.resources.tasks import TasksResource
+from .api.projects.resources.time_tracking import TimeTrackingResource
+from .api.team.resources.employee_time_tracking import EmployeeTimeTrackingResource
+from .api.team.resources.employees import EmployeesResource
 from .exceptions import (
     HoldedAPIError,
     HoldedAuthError,
@@ -22,30 +46,6 @@ from .exceptions import (
     HoldedTimeoutError,
     HoldedValidationError,
 )
-from .invoice_api.resources.contacts import ContactsResource
-from .invoice_api.resources.documents import DocumentsResource
-from .invoice_api.resources.expense_accounts import ExpenseAccountsResource
-from .invoice_api.resources.numbering_series import NumberingSeriesResource
-from .invoice_api.resources.payments import PaymentsResource
-from .invoice_api.resources.products import ProductsResource
-from .invoice_api.resources.remittances import RemittancesResource
-from .invoice_api.resources.sales_channels import SalesChannelsResource
-from .invoice_api.resources.contact_groups import ContactGroupsResource
-from .invoice_api.resources.services import ServicesResource
-from .invoice_api.resources.taxes import TaxesResource
-from .invoice_api.resources.treasury import TreasuryResource
-from .invoice_api.resources.warehouse import WarehouseResource
-from .crm_api.resources.funnels import FunnelsResource
-from .crm_api.resources.leads import LeadsResource
-from .crm_api.resources.events import EventsResource
-from .crm_api.resources.bookings import BookingsResource
-from .projects_api.resources.projects import ProjectsResource
-from .projects_api.resources.tasks import TasksResource
-from .projects_api.resources.time_tracking import TimeTrackingResource
-from .team_api.resources.employees import EmployeesResource
-from .team_api.resources.employee_time_tracking import EmployeeTimeTrackingResource
-from .accounting_api.resources.daily_ledger import DailyLedgerResource
-from .accounting_api.resources.chart_of_accounts import ChartOfAccountsResource
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +190,7 @@ class HoldedClient:
         try:
             response.raise_for_status()
             return self._deserialize_response(response, response_model)
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError:
             error_data = {}
             try:
                 error_data = response.json()
@@ -287,17 +287,13 @@ class HoldedClient:
                 requests.exceptions.SSLError,
             ) as e:
                 if attempt == self.max_retries - 1:
-                    raise HoldedConnectionError(
-                        message=f"Connection error: {str(e)}"
-                    ) from e
+                    raise HoldedConnectionError(message=f"Connection error: {str(e)}") from e
                 time.sleep(self.retry_delay)
             except requests.exceptions.Timeout as e:
                 if attempt == self.max_retries - 1:
-                    raise HoldedTimeoutError(
-                        message=f"Request timed out: {str(e)}"
-                    ) from e
+                    raise HoldedTimeoutError(message=f"Request timed out: {str(e)}") from e
                 time.sleep(self.retry_delay)
-            except (HoldedRateLimitError, HoldedServerError) as e:
+            except (HoldedRateLimitError, HoldedServerError):
                 if attempt == self.max_retries - 1:
                     raise
                 time.sleep(self.retry_delay * (attempt + 1))
@@ -342,9 +338,7 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request(
-            "POST", path, params=params, data=data, response_model=response_model
-        )
+        return self._request("POST", path, params=params, data=data, response_model=response_model)
 
     def put(
         self,
@@ -364,9 +358,7 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request(
-            "PUT", path, params=params, data=data, response_model=response_model
-        )
+        return self._request("PUT", path, params=params, data=data, response_model=response_model)
 
     def delete(
         self,
@@ -384,9 +376,7 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request(
-            "DELETE", path, params=params, response_model=response_model
-        )
+        return self._request("DELETE", path, params=params, response_model=response_model)
 
     def close(self) -> None:
         """Close the client session."""

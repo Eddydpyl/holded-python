@@ -2,7 +2,8 @@
 """
 Setup script for the Holded API wrapper.
 """
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -13,7 +14,7 @@ requirements = [
     "aiohttp>=3.7.4",
     "python-dateutil>=2.8.2",
     "typing-extensions>=4.0.0",
-    "pydantic>=2.0.0"
+    "pydantic>=2.0.0",
 ]
 
 setup(
@@ -45,4 +46,4 @@ setup(
     install_requires=requirements,
     keywords=["holded", "api", "wrapper", "client", "erp", "crm"],
     include_package_data=True,
-) 
+)

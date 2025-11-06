@@ -2,9 +2,9 @@
 Asynchronous client for the Holded API.
 """
 
+import asyncio
 import json
 import logging
-import asyncio
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 from urllib.parse import urljoin
 
@@ -12,6 +12,30 @@ import aiohttp
 from aiohttp import ClientTimeout
 from pydantic import BaseModel
 
+from .api.accounting.resources.async_chart_of_accounts import AsyncChartOfAccountsResource
+from .api.accounting.resources.async_daily_ledger import AsyncDailyLedgerResource
+from .api.crm.resources.async_bookings import AsyncBookingsResource
+from .api.crm.resources.async_events import AsyncEventsResource
+from .api.crm.resources.async_funnels import AsyncFunnelsResource
+from .api.crm.resources.async_leads import AsyncLeadsResource
+from .api.invoice.resources.async_contact_groups import AsyncContactGroupsResource
+from .api.invoice.resources.async_contacts import AsyncContactsResource
+from .api.invoice.resources.async_documents import AsyncDocumentsResource
+from .api.invoice.resources.async_expense_accounts import AsyncExpenseAccountsResource
+from .api.invoice.resources.async_numbering_series import AsyncNumberingSeriesResource
+from .api.invoice.resources.async_payments import AsyncPaymentsResource
+from .api.invoice.resources.async_products import AsyncProductsResource
+from .api.invoice.resources.async_remittances import AsyncRemittancesResource
+from .api.invoice.resources.async_sales_channels import AsyncSalesChannelsResource
+from .api.invoice.resources.async_services import AsyncServicesResource
+from .api.invoice.resources.async_taxes import AsyncTaxesResource
+from .api.invoice.resources.async_treasury import AsyncTreasuryResource
+from .api.invoice.resources.async_warehouse import AsyncWarehouseResource
+from .api.projects.resources.async_projects import AsyncProjectsResource
+from .api.projects.resources.async_tasks import AsyncTasksResource
+from .api.projects.resources.async_time_tracking import AsyncTimeTrackingResource
+from .api.team.resources.async_employee_time_tracking import AsyncEmployeeTimeTrackingResource
+from .api.team.resources.async_employees import AsyncEmployeesResource
 from .exceptions import (
     HoldedAPIError,
     HoldedAuthError,
@@ -23,30 +47,6 @@ from .exceptions import (
     HoldedTimeoutError,
     HoldedValidationError,
 )
-from .invoice_api.resources.async_contacts import AsyncContactsResource
-from .invoice_api.resources.async_documents import AsyncDocumentsResource
-from .invoice_api.resources.async_expense_accounts import AsyncExpenseAccountsResource
-from .invoice_api.resources.async_numbering_series import AsyncNumberingSeriesResource
-from .invoice_api.resources.async_payments import AsyncPaymentsResource
-from .invoice_api.resources.async_products import AsyncProductsResource
-from .invoice_api.resources.async_remittances import AsyncRemittancesResource
-from .invoice_api.resources.async_sales_channels import AsyncSalesChannelsResource
-from .invoice_api.resources.async_contact_groups import AsyncContactGroupsResource
-from .invoice_api.resources.async_services import AsyncServicesResource
-from .invoice_api.resources.async_taxes import AsyncTaxesResource
-from .invoice_api.resources.async_treasury import AsyncTreasuryResource
-from .invoice_api.resources.async_warehouse import AsyncWarehouseResource
-from .crm_api.resources.async_funnels import AsyncFunnelsResource
-from .crm_api.resources.async_leads import AsyncLeadsResource
-from .crm_api.resources.async_events import AsyncEventsResource
-from .crm_api.resources.async_bookings import AsyncBookingsResource
-from .projects_api.resources.async_projects import AsyncProjectsResource
-from .projects_api.resources.async_tasks import AsyncTasksResource
-from .projects_api.resources.async_time_tracking import AsyncTimeTrackingResource
-from .team_api.resources.async_employees import AsyncEmployeesResource
-from .team_api.resources.async_employee_time_tracking import AsyncEmployeeTimeTrackingResource
-from .accounting_api.resources.async_daily_ledger import AsyncDailyLedgerResource
-from .accounting_api.resources.async_chart_of_accounts import AsyncChartOfAccountsResource
 
 logger = logging.getLogger(__name__)
 
@@ -199,36 +199,22 @@ class AsyncHoldedClient:
                 except json.JSONDecodeError:
                     data = {"message": text}
         except Exception as e:
-            raise HoldedAPIError(
-                f"Failed to parse response: {str(e)}", status_code=status_code
-            )
+            raise HoldedAPIError(f"Failed to parse response: {str(e)}", status_code=status_code)
 
         if status_code >= 400:
             error_message = data.get("message", str(data))
             if status_code == 401:
-                raise HoldedAuthError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedAuthError(error_message, status_code=status_code, error_data=data)
             elif status_code == 404:
-                raise HoldedNotFoundError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedNotFoundError(error_message, status_code=status_code, error_data=data)
             elif status_code == 422:
-                raise HoldedValidationError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedValidationError(error_message, status_code=status_code, error_data=data)
             elif status_code == 429:
-                raise HoldedRateLimitError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedRateLimitError(error_message, status_code=status_code, error_data=data)
             elif status_code >= 500:
-                raise HoldedServerError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedServerError(error_message, status_code=status_code, error_data=data)
             else:
-                raise HoldedAPIError(
-                    error_message, status_code=status_code, error_data=data
-                )
+                raise HoldedAPIError(error_message, status_code=status_code, error_data=data)
 
         if response_model is not None:
             return response_model.model_validate(data)
@@ -283,10 +269,7 @@ class AsyncHoldedClient:
             except (HoldedRateLimitError, HoldedServerError) as e:
                 if attempt < self.max_retries - 1:
                     wait_time = self.retry_delay * (2**attempt)
-                    logger.warning(
-                        f"Request failed with {e.__class__.__name__}. "
-                        f"Retrying in {wait_time} seconds..."
-                    )
+                    logger.warning(f"Request failed with {e.__class__.__name__}. Retrying in {wait_time} seconds...")
                     await asyncio.sleep(wait_time)
                 else:
                     raise
@@ -316,9 +299,7 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request(
-            "GET", path, params=params, response_model=response_model
-        )
+        return await self.request("GET", path, params=params, response_model=response_model)
 
     async def post(
         self,
@@ -339,9 +320,7 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request(
-            "POST", path, params=params, data=data, response_model=response_model
-        )
+        return await self.request("POST", path, params=params, data=data, response_model=response_model)
 
     async def put(
         self,
@@ -362,9 +341,7 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request(
-            "PUT", path, params=params, data=data, response_model=response_model
-        )
+        return await self.request("PUT", path, params=params, data=data, response_model=response_model)
 
     async def delete(
         self,
@@ -383,9 +360,7 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request(
-            "DELETE", path, params=params, response_model=response_model
-        )
+        return await self.request("DELETE", path, params=params, response_model=response_model)
 
     async def close(self) -> None:
         """

@@ -4,7 +4,7 @@ Tests for the Employees API.
 
 import pytest
 
-from holded.team_api.models.employees import EmployeeCreate, EmployeeUpdate
+from holded.api.team.models.employees import EmployeeCreate, EmployeeUpdate
 
 
 class TestEmployeesResource:
@@ -307,4 +307,3 @@ class TestAsyncEmployeesResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Delete employee failed: {e}")
-

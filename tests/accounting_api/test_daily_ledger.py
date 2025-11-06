@@ -4,7 +4,7 @@ Tests for the Daily Ledger API.
 
 import pytest
 
-from holded.accounting_api.models.daily_ledger import DailyLedgerListParams, EntryCreate, EntryLine
+from holded.api.accounting.models.daily_ledger import DailyLedgerListParams, EntryCreate, EntryLine
 
 
 class TestDailyLedgerResource:
@@ -143,8 +143,12 @@ class TestAsyncDailyLedgerResource:
                 pytest.skip("Need at least 2 accounts in chart of accounts to create entry")
 
             # Get two account codes
-            account1 = accounts[0].code if hasattr(accounts[0], "code") else accounts[0].get("code") or accounts[0].get("id")
-            account2 = accounts[1].code if hasattr(accounts[1], "code") else accounts[1].get("code") or accounts[1].get("id")
+            account1 = (
+                accounts[0].code if hasattr(accounts[0], "code") else accounts[0].get("code") or accounts[0].get("id")
+            )
+            account2 = (
+                accounts[1].code if hasattr(accounts[1], "code") else accounts[1].get("code") or accounts[1].get("id")
+            )
 
             if not account1 or not account2:
                 pytest.skip("Account codes not found")
@@ -165,4 +169,3 @@ class TestAsyncDailyLedgerResource:
             assert "id" in result or "_id" in result or "status" in result
         except Exception as e:
             pytest.skip(f"Entry creation failed: {e}")
-

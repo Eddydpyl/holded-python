@@ -2,25 +2,32 @@
 Tests for the Tasks API.
 """
 
+import asyncio
+
 import pytest
 
-from holded.projects_api.models.tasks import TaskCreate
+from holded.api.projects.models.tasks import TaskCreate
+from holded.exceptions import HoldedTimeoutError
 
 
 class TestTasksResource:
     """Test cases for the Tasks API."""
 
+    @pytest.mark.timeout(35, method="thread")  # 35 seconds timeout (5 seconds more than default client timeout)
     def test_list_tasks(self, client):
         """Test listing tasks."""
-        result = client.tasks.list()
+        try:
+            result = client.tasks.list()
 
-        assert result is not None
-        assert isinstance(result, list)
+            assert result is not None
+            assert isinstance(result, list)
+        except (HoldedTimeoutError, TimeoutError):
+            pytest.skip("API request timed out - this may be a transient issue")
 
     def test_create_task(self, client):
         """Test creating a task."""
         # First, create a project to use
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
         project_data = ProjectCreate(
             name=f"Test Project for Task {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
@@ -60,10 +67,11 @@ class TestTasksResource:
     def test_get_task(self, client):
         """Test getting a task."""
         # First, create a project and task
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Task Get {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Task Get {test_id}",
         )
 
         try:
@@ -102,10 +110,11 @@ class TestTasksResource:
     def test_delete_task(self, client):
         """Test deleting a task."""
         # First, create a project and task
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Task Delete {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Task Delete {test_id}",
         )
 
         try:
@@ -145,19 +154,26 @@ class TestAsyncTasksResource:
     @pytest.mark.asyncio
     async def test_list_tasks(self, async_client):
         """Test listing tasks asynchronously."""
-        result = await async_client.tasks.list()
+        try:
+            result = await asyncio.wait_for(
+                async_client.tasks.list(),
+                timeout=35.0,  # 35 seconds timeout (5 seconds more than default client timeout)
+            )
 
-        assert result is not None
-        assert isinstance(result, list)
+            assert result is not None
+            assert isinstance(result, list)
+        except (HoldedTimeoutError, TimeoutError, asyncio.TimeoutError):
+            pytest.skip("API request timed out - this may be a transient issue")
 
     @pytest.mark.asyncio
     async def test_create_task(self, async_client):
         """Test creating a task asynchronously."""
         # First, create a project to use
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Task Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Task Async {test_id}",
         )
 
         try:
@@ -195,10 +211,11 @@ class TestAsyncTasksResource:
     async def test_get_task(self, async_client):
         """Test getting a task asynchronously."""
         # First, create a project and task
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Task Get Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Task Get Async {test_id}",
         )
 
         try:
@@ -238,10 +255,11 @@ class TestAsyncTasksResource:
     async def test_delete_task(self, async_client):
         """Test deleting a task asynchronously."""
         # First, create a project and task
-        from holded.projects_api.models.projects import ProjectCreate
+        from holded.api.projects.models.projects import ProjectCreate
 
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project for Task Delete Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project for Task Delete Async {test_id}",
         )
 
         try:
@@ -250,8 +268,9 @@ class TestAsyncTasksResource:
             if not project_id:
                 pytest.skip("Project ID not found after creation")
 
+            test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
             task_data = TaskCreate(
-                name=f"Test Task Delete Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+                name=f"Test Task Delete Async {test_id}",
                 project_id=project_id,
             )
 
@@ -273,4 +292,3 @@ class TestAsyncTasksResource:
                 pass
         except Exception as e:
             pytest.skip(f"Delete task failed: {e}")
-

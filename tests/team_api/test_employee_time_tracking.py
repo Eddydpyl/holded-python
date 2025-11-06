@@ -2,10 +2,11 @@
 Tests for the Employee Time Tracking API.
 """
 
-import pytest
 from datetime import datetime, timedelta
 
-from holded.team_api.models.employee_time_tracking import EmployeeTimeTrackingCreate, EmployeeTimeTrackingUpdate
+import pytest
+
+from holded.api.team.models.employee_time_tracking import EmployeeTimeTrackingCreate
 
 
 class TestEmployeeTimeTrackingResource:
@@ -36,7 +37,6 @@ class TestEmployeeTimeTrackingResource:
     def test_list_employee_times(self, client):
         """Test listing time tracking entries for an employee."""
         # First, get an existing employee or create one
-        import time
 
         try:
             employees_result = client.employees.list()
@@ -79,7 +79,7 @@ class TestEmployeeTimeTrackingResource:
 
             if not employees:
                 # Create a test employee
-                from holded.team_api.models.employees import EmployeeCreate
+                from holded.api.team.models.employees import EmployeeCreate
 
                 employee_data = EmployeeCreate(
                     name=f"Test Employee Time {int(time.time())}",
@@ -131,7 +131,6 @@ class TestEmployeeTimeTrackingResource:
 
     def test_get_time_tracking(self, client):
         """Test getting a time tracking entry."""
-        import time
 
         # First, get an existing employee
         try:
@@ -173,7 +172,6 @@ class TestEmployeeTimeTrackingResource:
 
     def test_clock_in(self, client):
         """Test clocking in an employee."""
-        import time
 
         # First, get an existing employee
         try:
@@ -200,7 +198,6 @@ class TestEmployeeTimeTrackingResource:
 
     def test_clock_out(self, client):
         """Test clocking out an employee."""
-        import time
 
         # First, get an existing employee
         try:
@@ -227,7 +224,6 @@ class TestEmployeeTimeTrackingResource:
 
     def test_pause(self, client):
         """Test pausing an employee's time tracking."""
-        import time
 
         # First, get an existing employee
         try:
@@ -254,7 +250,6 @@ class TestEmployeeTimeTrackingResource:
 
     def test_unpause(self, client):
         """Test unpausing an employee's time tracking."""
-        import time
 
         # First, get an existing employee
         try:
@@ -353,7 +348,7 @@ class TestAsyncEmployeeTimeTrackingResource:
 
             if not employees:
                 # Create a test employee
-                from holded.team_api.models.employees import EmployeeCreate
+                from holded.api.team.models.employees import EmployeeCreate
 
                 employee_data = EmployeeCreate(
                     name=f"Test Employee Time Async {int(time.time())}",
@@ -547,4 +542,3 @@ class TestAsyncEmployeeTimeTrackingResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Unpause failed: {e}")
-

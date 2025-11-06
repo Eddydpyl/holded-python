@@ -1,9 +1,10 @@
 """
 Tests for the Products API.
 """
+
 import pytest
 
-from holded.invoice_api.models.products import ProductCreate, ProductUpdate, ProductListParams
+from holded.api.invoice.models.products import ProductListParams, ProductUpdate
 
 
 class TestProductsResource:
@@ -12,11 +13,11 @@ class TestProductsResource:
     def test_list_products(self, client):
         """Test listing products."""
         result = client.products.list()
-        
+
         assert result is not None
         # Result should be a list
         assert isinstance(result, list)
-        
+
         # If there are products, verify structure
         if result and len(result) > 0:
             product = result[0]
@@ -25,13 +26,10 @@ class TestProductsResource:
 
     def test_list_products_with_params(self, client):
         """Test listing products with query parameters."""
-        params = ProductListParams(
-            page=1,
-            limit=10
-        )
-        
+        params = ProductListParams(page=1, limit=10)
+
         result = client.products.list(params)
-        
+
         assert result is not None
         assert isinstance(result, list)
 
@@ -44,11 +42,11 @@ class TestProductsResource:
             "desc": "Test product description",
             "price": 10.50,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         result = client.products.create(product_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -68,11 +66,11 @@ class TestProductsResource:
             "desc": "Test product description from dict",
             "price": 15.75,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         result = client.products.create(product_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -87,11 +85,11 @@ class TestProductsResource:
         """Test getting a specific product."""
         # First, try to get an existing product
         products = client.products.list()
-        
+
         if products and len(products) > 0:
             product_id = products[0]["id"]
             result = client.products.get(product_id)
-            
+
             assert result is not None
             assert isinstance(result, dict)
             assert "id" in result
@@ -103,17 +101,17 @@ class TestProductsResource:
                 "desc": "Test description for get",
                 "price": 20.0,
                 "tax": 21.0,
-                "kind": "simple"
+                "kind": "simple",
             }
             created = client.products.create(product_data)
             if isinstance(created, dict) and "id" in created:
                 product_id = created["id"]
                 result = client.products.get(product_id)
-                
+
                 assert result is not None
                 assert isinstance(result, dict)
                 assert "id" in result
-                
+
                 # Cleanup
                 try:
                     client.products.delete(product_id)
@@ -128,23 +126,19 @@ class TestProductsResource:
             "desc": "Original description",
             "price": 25.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         created = client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Update the product
-            update_data = ProductUpdate(
-                name="Updated Test Product",
-                desc="Updated description",
-                price=30.0
-            )
-            
+            update_data = ProductUpdate(name="Updated Test Product", desc="Updated description", price=30.0)
+
             result = client.products.update(product_id, update_data)
-            
+
             assert result is not None
             if isinstance(result, dict):
                 # The update might return status/info, so verify by getting the product
@@ -154,7 +148,7 @@ class TestProductsResource:
                         assert updated_product["name"] == "Updated Test Product"
                     elif "desc" in updated_product:
                         assert updated_product["desc"] == "Updated description"
-            
+
             # Cleanup
             try:
                 client.products.delete(product_id)
@@ -169,17 +163,17 @@ class TestProductsResource:
             "desc": "Product to be deleted",
             "price": 35.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         created = client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Delete the product
             result = client.products.delete(product_id)
-            
+
             assert result is not None
             # Verify deletion by trying to get the product (should fail)
             try:
@@ -199,19 +193,19 @@ class TestProductsResource:
             "price": 40.0,
             "tax": 21.0,
             "kind": "simple",
-            "stock": 10
+            "stock": 10,
         }
-        
+
         created = client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Update stock
             result = client.products.update_stock(product_id, 20)
-            
+
             assert result is not None
-            
+
             # Cleanup
             try:
                 client.products.delete(product_id)
@@ -222,7 +216,7 @@ class TestProductsResource:
         """Test listing product images."""
         # First, try to get an existing product
         products = client.products.list()
-        
+
         if products and len(products) > 0:
             product_id = products[0]["id"]
             try:
@@ -253,10 +247,10 @@ class TestAsyncProductsResource:
     async def test_list_products(self, async_client):
         """Test listing products asynchronously."""
         result = await async_client.products.list()
-        
+
         assert result is not None
         assert isinstance(result, list)
-        
+
         if result and len(result) > 0:
             product = result[0]
             assert "id" in product
@@ -265,13 +259,10 @@ class TestAsyncProductsResource:
     @pytest.mark.asyncio
     async def test_list_products_with_params(self, async_client):
         """Test listing products with query parameters asynchronously."""
-        params = ProductListParams(
-            page=1,
-            limit=10
-        )
-        
+        params = ProductListParams(page=1, limit=10)
+
         result = await async_client.products.list(params)
-        
+
         assert result is not None
         assert isinstance(result, list)
 
@@ -283,11 +274,11 @@ class TestAsyncProductsResource:
             "desc": "Test async description",
             "price": 50.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         result = await async_client.products.create(product_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -306,11 +297,11 @@ class TestAsyncProductsResource:
             "desc": "Test async description from dict",
             "price": 55.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         result = await async_client.products.create(product_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -325,11 +316,11 @@ class TestAsyncProductsResource:
     async def test_get_product(self, async_client):
         """Test getting a specific product asynchronously."""
         products = await async_client.products.list()
-        
+
         if products and len(products) > 0:
             product_id = products[0]["id"]
             result = await async_client.products.get(product_id)
-            
+
             assert result is not None
             assert isinstance(result, dict)
             assert "id" in result
@@ -340,16 +331,16 @@ class TestAsyncProductsResource:
                 "desc": "Test async description for get",
                 "price": 60.0,
                 "tax": 21.0,
-                "kind": "simple"
+                "kind": "simple",
             }
             created = await async_client.products.create(product_data)
             if isinstance(created, dict) and "id" in created:
                 product_id = created["id"]
                 result = await async_client.products.get(product_id)
-                
+
                 assert result is not None
                 assert isinstance(result, dict)
-                
+
                 # Cleanup
                 try:
                     await async_client.products.delete(product_id)
@@ -365,23 +356,19 @@ class TestAsyncProductsResource:
             "desc": "Original async description",
             "price": 65.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         created = await async_client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Update the product
-            update_data = ProductUpdate(
-                name="Updated Async Test Product",
-                desc="Updated async description",
-                price=70.0
-            )
-            
+            update_data = ProductUpdate(name="Updated Async Test Product", desc="Updated async description", price=70.0)
+
             result = await async_client.products.update(product_id, update_data)
-            
+
             assert result is not None
             if isinstance(result, dict):
                 # Verify by getting the product
@@ -391,7 +378,7 @@ class TestAsyncProductsResource:
                         assert updated_product["name"] == "Updated Async Test Product"
                     elif "desc" in updated_product:
                         assert updated_product["desc"] == "Updated async description"
-            
+
             # Cleanup
             try:
                 await async_client.products.delete(product_id)
@@ -407,17 +394,17 @@ class TestAsyncProductsResource:
             "desc": "Async product to be deleted",
             "price": 75.0,
             "tax": 21.0,
-            "kind": "simple"
+            "kind": "simple",
         }
-        
+
         created = await async_client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Delete the product
             result = await async_client.products.delete(product_id)
-            
+
             assert result is not None
             # Verify deletion
             try:
@@ -435,19 +422,19 @@ class TestAsyncProductsResource:
             "price": 80.0,
             "tax": 21.0,
             "kind": "simple",
-            "stock": 15
+            "stock": 15,
         }
-        
+
         created = await async_client.products.create(product_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             product_id = created["id"]
-            
+
             # Update stock
             result = await async_client.products.update_stock(product_id, 25)
-            
+
             assert result is not None
-            
+
             # Cleanup
             try:
                 await async_client.products.delete(product_id)
@@ -458,7 +445,7 @@ class TestAsyncProductsResource:
     async def test_list_images(self, async_client):
         """Test listing product images asynchronously."""
         products = await async_client.products.list()
-        
+
         if products and len(products) > 0:
             product_id = products[0]["id"]
             try:
@@ -481,4 +468,3 @@ class TestAsyncProductsResource:
         except Exception:
             # Categories endpoint might not be available
             pass
-

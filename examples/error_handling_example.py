@@ -2,15 +2,22 @@
 """
 Example script demonstrating error handling with the Holded API wrapper.
 """
-import os
+
 import asyncio
+import os
 import uuid
 
-from holded.client import HoldedClient
 from holded.async_client import AsyncHoldedClient
+from holded.client import HoldedClient
 from holded.exceptions import (
-    HoldedError, HoldedAuthError, HoldedNotFoundError, HoldedValidationError,
-    HoldedRateLimitError, HoldedServerError, HoldedTimeoutError, HoldedConnectionError
+    HoldedAuthError,
+    HoldedConnectionError,
+    HoldedError,
+    HoldedNotFoundError,
+    HoldedRateLimitError,
+    HoldedServerError,
+    HoldedTimeoutError,
+    HoldedValidationError,
 )
 
 
@@ -39,7 +46,7 @@ def sync_example():
     if not valid_api_key:
         print("\nPlease set the HOLDED_API_KEY environment variable for the remaining examples.")
         return
-    
+
     client = HoldedClient(api_key=valid_api_key)
 
     # Example 2: Not Found Error
@@ -75,7 +82,7 @@ def sync_example():
             api_key=valid_api_key,
             base_url="https://invalid-domain.example.com/",
             timeout=2,  # Short timeout
-            max_retries=1  # Only one retry
+            max_retries=1,  # Only one retry
         )
         bad_client.contacts.list()
     except HoldedConnectionError as e:
@@ -91,7 +98,7 @@ def sync_example():
         # Try some operations
         contacts = client.contacts.list(limit=1)
         print(f"Successfully retrieved {len(contacts.items)} contacts")
-        
+
         # Intentionally cause an error
         client.contacts.get("non-existent-id")
     except HoldedNotFoundError as e:
@@ -148,7 +155,7 @@ async def async_example():
         # Try some operations
         contacts = await client.contacts.list(limit=1)
         print(f"Successfully retrieved {len(contacts.items)} contacts")
-        
+
         # Intentionally cause an error
         await client.contacts.get("non-existent-id")
     except HoldedNotFoundError as e:
@@ -164,6 +171,6 @@ async def async_example():
 if __name__ == "__main__":
     print("Running synchronous error handling examples...")
     sync_example()
-    
+
     print("\nRunning asynchronous error handling examples...")
-    asyncio.run(async_example()) 
+    asyncio.run(async_example())

@@ -1,6 +1,7 @@
 """
 Tests for the Remittances API.
 """
+
 import pytest
 
 
@@ -60,4 +61,3 @@ class TestAsyncRemittancesResource:
 
         assert result is not None
         assert isinstance(result, dict)
-

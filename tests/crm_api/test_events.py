@@ -4,7 +4,7 @@ Tests for the Events API.
 
 import pytest
 
-from holded.crm_api.models.events import EventCreate, EventUpdate
+from holded.api.crm.models.events import EventCreate, EventUpdate
 
 
 class TestEventsResource:
@@ -266,4 +266,3 @@ class TestAsyncEventsResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Delete event failed: {e}")
-

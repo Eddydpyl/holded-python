@@ -8,8 +8,8 @@ import pytest
 import pytest_asyncio
 from dotenv import load_dotenv
 
-from holded.client import HoldedClient
 from holded.async_client import AsyncHoldedClient
+from holded.client import HoldedClient
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,8 +29,7 @@ def api_key() -> str:
     api_key = os.getenv("HOLDED_API_KEY")
     if not api_key:
         raise ValueError(
-            "HOLDED_API_KEY environment variable is not set. "
-            "Please create a .env file with HOLDED_API_KEY=your_api_key"
+            "HOLDED_API_KEY environment variable is not set. Please create a .env file with HOLDED_API_KEY=your_api_key"
         )
     return api_key
 

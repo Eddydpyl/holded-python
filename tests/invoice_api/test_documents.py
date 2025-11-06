@@ -2,10 +2,11 @@
 Tests for the Documents API.
 """
 
-import pytest
 from datetime import datetime
 
-from holded.invoice_api.models.documents import DocumentListParams, DocumentType
+import pytest
+
+from holded.api.invoice.models.documents import DocumentListParams
 
 
 class TestDocumentsResource:
@@ -309,9 +310,7 @@ class TestDocumentsResource:
             pytest.skip("Document ID not found")
 
         # Get document to find item IDs
-        doc = client.documents.get(
-            doc_id, "salesorder" if "salesorder" in str(documents[0]) else "invoice"
-        )
+        doc = client.documents.get(doc_id, "salesorder" if "salesorder" in str(documents[0]) else "invoice")
         items = doc.get("items", []) if doc else []
 
         if not items:
@@ -584,9 +583,7 @@ class TestAsyncDocumentsResource:
 
             # Update the document
             update_data = {"notes": "Updated test document"}
-            result = await async_client.documents.update(
-                doc_id, "estimate", update_data
-            )
+            result = await async_client.documents.update(doc_id, "estimate", update_data)
 
             assert result is not None
             assert isinstance(result, dict)
@@ -805,9 +802,7 @@ class TestAsyncDocumentsResource:
             pytest.skip("Item ID not found")
 
         try:
-            result = await async_client.documents.get_shipped_units(
-                doc_id, doc_type, item_id
-            )
+            result = await async_client.documents.get_shipped_units(doc_id, doc_type, item_id)
 
             assert result is not None
             assert isinstance(result, dict)
@@ -840,9 +835,7 @@ class TestAsyncDocumentsResource:
         }
 
         try:
-            result = await async_client.documents.attach_file(
-                doc_id, "invoice", attach_data
-            )
+            result = await async_client.documents.attach_file(doc_id, "invoice", attach_data)
 
             assert result is not None
             assert isinstance(result, dict)
@@ -865,9 +858,7 @@ class TestAsyncDocumentsResource:
         tracking_data = {"trackingNumber": "TEST123456", "carrier": "Test Carrier"}
 
         try:
-            result = await async_client.documents.update_tracking(
-                doc_id, "invoice", tracking_data
-            )
+            result = await async_client.documents.update_tracking(doc_id, "invoice", tracking_data)
 
             assert result is not None
             assert isinstance(result, dict)
@@ -890,9 +881,7 @@ class TestAsyncDocumentsResource:
         pipeline_data = {"stage": "test_stage"}
 
         try:
-            result = await async_client.documents.update_pipeline(
-                doc_id, "invoice", pipeline_data
-            )
+            result = await async_client.documents.update_pipeline(doc_id, "invoice", pipeline_data)
 
             assert result is not None
             assert isinstance(result, dict)

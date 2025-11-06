@@ -1,13 +1,19 @@
 """
 Unit tests for the Holded client.
 """
+
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import requests
 
 from holded.client import HoldedClient
 from holded.exceptions import (
-    HoldedAuthError, HoldedNotFoundError, HoldedValidationError,
-    HoldedRateLimitError, HoldedServerError
+    HoldedAuthError,
+    HoldedNotFoundError,
+    HoldedRateLimitError,
+    HoldedServerError,
+    HoldedValidationError,
 )
 
 
@@ -106,7 +112,10 @@ class TestHoldedClient(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": "Invalid API key"}
         mock_response.status_code = 401
-        mock_response.raise_for_status.side_effect = Exception("401 Client Error")
+        mock_response.text = "401 Client Error"
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            response=mock_response
+        )
         mock_request.return_value = mock_response
 
         # Call method and assert exception
@@ -120,7 +129,10 @@ class TestHoldedClient(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": "Resource not found"}
         mock_response.status_code = 404
-        mock_response.raise_for_status.side_effect = Exception("404 Client Error")
+        mock_response.text = "404 Client Error"
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            response=mock_response
+        )
         mock_request.return_value = mock_response
 
         # Call method and assert exception
@@ -134,7 +146,10 @@ class TestHoldedClient(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": "Validation failed"}
         mock_response.status_code = 422
-        mock_response.raise_for_status.side_effect = Exception("422 Client Error")
+        mock_response.text = "422 Client Error"
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            response=mock_response
+        )
         mock_request.return_value = mock_response
 
         # Call method and assert exception
@@ -148,7 +163,10 @@ class TestHoldedClient(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": "Rate limit exceeded"}
         mock_response.status_code = 429
-        mock_response.raise_for_status.side_effect = Exception("429 Client Error")
+        mock_response.text = "429 Client Error"
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            response=mock_response
+        )
         mock_request.return_value = mock_response
 
         # Call method and assert exception
@@ -162,7 +180,10 @@ class TestHoldedClient(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": "Internal server error"}
         mock_response.status_code = 500
-        mock_response.raise_for_status.side_effect = Exception("500 Server Error")
+        mock_response.text = "500 Server Error"
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
+            response=mock_response
+        )
         mock_request.return_value = mock_response
 
         # Call method and assert exception
@@ -171,4 +192,4 @@ class TestHoldedClient(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

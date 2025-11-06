@@ -4,7 +4,7 @@ Tests for the Contact Groups API.
 
 import pytest
 
-from holded.invoice_api.models.contact_groups import (
+from holded.api.invoice.models.contact_groups import (
     ContactGroupCreate,
     ContactGroupUpdate,
 )

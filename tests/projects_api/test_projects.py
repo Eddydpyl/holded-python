@@ -4,7 +4,7 @@ Tests for the Projects API.
 
 import pytest
 
-from holded.projects_api.models.projects import ProjectCreate, ProjectUpdate
+from holded.api.projects.models.projects import ProjectCreate, ProjectUpdate
 
 
 class TestProjectsResource:
@@ -210,8 +210,9 @@ class TestAsyncProjectsResource:
     async def test_update_project(self, async_client):
         """Test updating a project asynchronously."""
         # First, create a project to update
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project Update Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project Update Async {test_id}",
         )
 
         try:
@@ -241,8 +242,9 @@ class TestAsyncProjectsResource:
     async def test_delete_project(self, async_client):
         """Test deleting a project asynchronously."""
         # First, create a project to delete
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project Delete Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project Delete Async {test_id}",
         )
 
         try:
@@ -263,8 +265,9 @@ class TestAsyncProjectsResource:
     async def test_get_project_summary(self, async_client):
         """Test getting a project summary asynchronously."""
         # First, create a project to get summary
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         project_data = ProjectCreate(
-            name=f"Test Project Summary Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Project Summary Async {test_id}",
         )
 
         try:
@@ -285,4 +288,3 @@ class TestAsyncProjectsResource:
                 pass
         except Exception as e:
             pytest.skip(f"Get project summary failed: {e}")
-

@@ -1,9 +1,10 @@
 """
 Tests for the Services API.
 """
+
 import pytest
 
-from holded.invoice_api.models.services import ServiceCreate, ServiceUpdate
+from holded.api.invoice.models.services import ServiceCreate, ServiceUpdate
 
 
 class TestServicesResource:
@@ -191,8 +192,9 @@ class TestAsyncServicesResource:
     async def test_update_service(self, async_client):
         """Test updating a service asynchronously."""
         # First, create a service to update
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         service_data = ServiceCreate(
-            name=f"Test Service Update Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Service Update Async {test_id}",
         )
 
         try:
@@ -223,8 +225,9 @@ class TestAsyncServicesResource:
     async def test_delete_service(self, async_client):
         """Test deleting a service asynchronously."""
         # First, create a service to delete
+        test_id = pytest.current_test_id if hasattr(pytest, "current_test_id") else "test"
         service_data = ServiceCreate(
-            name=f"Test Service Delete Async {pytest.current_test_id if hasattr(pytest, 'current_test_id') else 'test'}",
+            name=f"Test Service Delete Async {test_id}",
         )
 
         try:
@@ -240,4 +243,3 @@ class TestAsyncServicesResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Delete service failed: {e}")
-

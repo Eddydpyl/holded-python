@@ -40,4 +40,3 @@ class TestAsyncChartOfAccountsResource:
             assert isinstance(account, dict)
             # Accounts should have at least code or name
             assert "code" in account or "name" in account or "id" in account
-

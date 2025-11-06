@@ -4,7 +4,7 @@ Tests for the Funnels API.
 
 import pytest
 
-from holded.crm_api.models.funnels import FunnelCreate, FunnelUpdate
+from holded.api.crm.models.funnels import FunnelCreate, FunnelUpdate
 
 
 class TestFunnelsResource:
@@ -232,4 +232,3 @@ class TestAsyncFunnelsResource:
             assert isinstance(result, dict)
         except Exception as e:
             pytest.skip(f"Delete funnel failed: {e}")
-

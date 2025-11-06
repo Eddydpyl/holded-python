@@ -9,28 +9,23 @@ __author__ = "BonifacioCalindoro"
 __license__ = "MIT"
 
 # Import main client classes for easier access
-from .client import HoldedClient
+# Import API modules for direct access
+from .api import accounting, crm, invoice, projects, team
 from .async_client import AsyncHoldedClient
+from .client import HoldedClient
 
 # Import exceptions
 from .exceptions import (
-    HoldedError,
     HoldedAPIError,
     HoldedAuthError,
+    HoldedConnectionError,
+    HoldedError,
     HoldedNotFoundError,
-    HoldedValidationError,
     HoldedRateLimitError,
     HoldedServerError,
     HoldedTimeoutError,
-    HoldedConnectionError,
+    HoldedValidationError,
 )
-
-# Import API modules for direct access
-from . import accounting_api
-from . import crm_api
-from . import invoice_api
-from . import projects_api
-from . import team_api
 
 __all__ = [
     "HoldedClient",
@@ -44,9 +39,9 @@ __all__ = [
     "HoldedServerError",
     "HoldedTimeoutError",
     "HoldedConnectionError",
-    "accounting_api",
-    "crm_api",
-    "invoice_api",
-    "projects_api",
-    "team_api",
+    "accounting",
+    "crm",
+    "invoice",
+    "projects",
+    "team",
 ]

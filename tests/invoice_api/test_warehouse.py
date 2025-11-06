@@ -1,9 +1,10 @@
 """
 Tests for the Warehouse API.
 """
+
 import pytest
 
-from holded.invoice_api.models.warehouse import WarehouseCreate, WarehouseUpdate, WarehouseListParams, WarehouseAddress
+from holded.api.invoice.models.warehouse import WarehouseAddress, WarehouseCreate, WarehouseListParams, WarehouseUpdate
 
 
 class TestWarehouseResource:
@@ -12,7 +13,7 @@ class TestWarehouseResource:
     def test_list_warehouses(self, client):
         """Test listing warehouses."""
         result = client.warehouse.list()
-        
+
         assert result is not None
         # Result should be a list or dict with items
         if isinstance(result, dict):
@@ -32,13 +33,10 @@ class TestWarehouseResource:
 
     def test_list_warehouses_with_params(self, client):
         """Test listing warehouses with query parameters."""
-        params = WarehouseListParams(
-            page=1,
-            limit=10
-        )
-        
+        params = WarehouseListParams(page=1, limit=10)
+
         result = client.warehouse.list(params)
-        
+
         assert result is not None
         if isinstance(result, dict) and "items" in result:
             assert isinstance(result["items"], list)
@@ -48,11 +46,7 @@ class TestWarehouseResource:
     def test_create_warehouse(self, client):
         """Test creating a warehouse."""
         address = WarehouseAddress(
-            address="123 Test Street",
-            city="Test City",
-            postalCode="12345",
-            country="Spain",
-            countryCode="ES"
+            address="123 Test Street", city="Test City", postalCode="12345", country="Spain", countryCode="ES"
         )
         warehouse_data = WarehouseCreate(
             name="Test Warehouse",
@@ -60,11 +54,11 @@ class TestWarehouseResource:
             phone="+1234567890",
             mobile="+0987654321",
             address=address,
-            default=False
+            default=False,
         )
-        
+
         result = client.warehouse.create(warehouse_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -88,13 +82,13 @@ class TestWarehouseResource:
                 "city": "Dict City",
                 "postalCode": "54321",
                 "country": "Spain",
-                "countryCode": "ES"
+                "countryCode": "ES",
             },
-            "default": False
+            "default": False,
         }
-        
+
         result = client.warehouse.create(warehouse_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -109,18 +103,18 @@ class TestWarehouseResource:
         """Test getting a specific warehouse."""
         # First, try to get an existing warehouse
         warehouses = client.warehouse.list()
-        
+
         if isinstance(warehouses, dict) and "items" in warehouses:
             items = warehouses["items"]
         elif isinstance(warehouses, list):
             items = warehouses
         else:
             items = []
-        
+
         if items and len(items) > 0:
             warehouse_id = items[0]["id"]
             result = client.warehouse.get(warehouse_id)
-            
+
             assert result is not None
             assert isinstance(result, dict)
             assert "id" in result
@@ -128,26 +122,18 @@ class TestWarehouseResource:
         else:
             # Create a test warehouse if none exist
             address = WarehouseAddress(
-                address="789 Get Street",
-                city="Get City",
-                postalCode="99999",
-                country="Spain",
-                countryCode="ES"
+                address="789 Get Street", city="Get City", postalCode="99999", country="Spain", countryCode="ES"
             )
-            warehouse_data = WarehouseCreate(
-                name="Test Get Warehouse",
-                email="get@test.com",
-                address=address
-            )
+            warehouse_data = WarehouseCreate(name="Test Get Warehouse", email="get@test.com", address=address)
             created = client.warehouse.create(warehouse_data)
             if isinstance(created, dict) and "id" in created:
                 warehouse_id = created["id"]
                 result = client.warehouse.get(warehouse_id)
-                
+
                 assert result is not None
                 assert isinstance(result, dict)
                 assert "id" in result
-                
+
                 # Cleanup
                 try:
                     client.warehouse.delete(warehouse_id)
@@ -158,31 +144,20 @@ class TestWarehouseResource:
         """Test updating a warehouse."""
         # Create a warehouse first
         address = WarehouseAddress(
-            address="321 Update Street",
-            city="Update City",
-            postalCode="11111",
-            country="Spain",
-            countryCode="ES"
+            address="321 Update Street", city="Update City", postalCode="11111", country="Spain", countryCode="ES"
         )
-        warehouse_data = WarehouseCreate(
-            name="Test Update Warehouse",
-            email="update@test.com",
-            address=address
-        )
-        
+        warehouse_data = WarehouseCreate(name="Test Update Warehouse", email="update@test.com", address=address)
+
         created = client.warehouse.create(warehouse_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             warehouse_id = created["id"]
-            
+
             # Update the warehouse
-            update_data = WarehouseUpdate(
-                name="Updated Test Warehouse",
-                email="updated@test.com"
-            )
-            
+            update_data = WarehouseUpdate(name="Updated Test Warehouse", email="updated@test.com")
+
             result = client.warehouse.update(warehouse_id, update_data)
-            
+
             assert result is not None
             if isinstance(result, dict):
                 # The update might return status/info, so verify by getting the warehouse
@@ -192,7 +167,7 @@ class TestWarehouseResource:
                         assert updated_warehouse["name"] == "Updated Test Warehouse"
                     elif "email" in updated_warehouse:
                         assert updated_warehouse["email"] == "updated@test.com"
-            
+
             # Cleanup
             try:
                 client.warehouse.delete(warehouse_id)
@@ -203,26 +178,18 @@ class TestWarehouseResource:
         """Test deleting a warehouse."""
         # Create a warehouse first
         address = WarehouseAddress(
-            address="654 Delete Street",
-            city="Delete City",
-            postalCode="22222",
-            country="Spain",
-            countryCode="ES"
+            address="654 Delete Street", city="Delete City", postalCode="22222", country="Spain", countryCode="ES"
         )
-        warehouse_data = WarehouseCreate(
-            name="Test Delete Warehouse",
-            email="delete@test.com",
-            address=address
-        )
-        
+        warehouse_data = WarehouseCreate(name="Test Delete Warehouse", email="delete@test.com", address=address)
+
         created = client.warehouse.create(warehouse_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             warehouse_id = created["id"]
-            
+
             # Delete the warehouse
             result = client.warehouse.delete(warehouse_id)
-            
+
             assert result is not None
             # Verify deletion by trying to get the warehouse (should fail)
             try:
@@ -237,14 +204,14 @@ class TestWarehouseResource:
         """Test listing products stock for a warehouse."""
         # First, get a warehouse
         warehouses = client.warehouse.list()
-        
+
         if isinstance(warehouses, dict) and "items" in warehouses:
             items = warehouses["items"]
         elif isinstance(warehouses, list):
             items = warehouses
         else:
             items = []
-        
+
         if items and len(items) > 0:
             warehouse_id = items[0]["id"]
             try:
@@ -262,7 +229,7 @@ class TestAsyncWarehouseResource:
     async def test_list_warehouses(self, async_client):
         """Test listing warehouses asynchronously."""
         result = await async_client.warehouse.list()
-        
+
         assert result is not None
         if isinstance(result, dict) and "items" in result:
             assert isinstance(result["items"], list)
@@ -272,13 +239,10 @@ class TestAsyncWarehouseResource:
     @pytest.mark.asyncio
     async def test_list_warehouses_with_params(self, async_client):
         """Test listing warehouses with query parameters asynchronously."""
-        params = WarehouseListParams(
-            page=1,
-            limit=10
-        )
-        
+        params = WarehouseListParams(page=1, limit=10)
+
         result = await async_client.warehouse.list(params)
-        
+
         assert result is not None
         if isinstance(result, dict) and "items" in result:
             assert isinstance(result["items"], list)
@@ -289,22 +253,14 @@ class TestAsyncWarehouseResource:
     async def test_create_warehouse(self, async_client):
         """Test creating a warehouse asynchronously."""
         address = WarehouseAddress(
-            address="123 Async Street",
-            city="Async City",
-            postalCode="33333",
-            country="Spain",
-            countryCode="ES"
+            address="123 Async Street", city="Async City", postalCode="33333", country="Spain", countryCode="ES"
         )
         warehouse_data = WarehouseCreate(
-            name="Test Async Warehouse",
-            email="async@test.com",
-            phone="+2222222222",
-            address=address,
-            default=False
+            name="Test Async Warehouse", email="async@test.com", phone="+2222222222", address=address, default=False
         )
-        
+
         result = await async_client.warehouse.create(warehouse_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -327,13 +283,13 @@ class TestAsyncWarehouseResource:
                 "city": "Async Dict City",
                 "postalCode": "44444",
                 "country": "Spain",
-                "countryCode": "ES"
+                "countryCode": "ES",
             },
-            "default": False
+            "default": False,
         }
-        
+
         result = await async_client.warehouse.create(warehouse_data)
-        
+
         assert result is not None
         if isinstance(result, dict):
             assert "id" in result or "name" in result
@@ -348,18 +304,18 @@ class TestAsyncWarehouseResource:
     async def test_get_warehouse(self, async_client):
         """Test getting a specific warehouse asynchronously."""
         warehouses = await async_client.warehouse.list()
-        
+
         if isinstance(warehouses, dict) and "items" in warehouses:
             items = warehouses["items"]
         elif isinstance(warehouses, list):
             items = warehouses
         else:
             items = []
-        
+
         if items and len(items) > 0:
             warehouse_id = items[0]["id"]
             result = await async_client.warehouse.get(warehouse_id)
-            
+
             assert result is not None
             assert isinstance(result, dict)
             assert "id" in result
@@ -370,21 +326,19 @@ class TestAsyncWarehouseResource:
                 city="Async Get City",
                 postalCode="55555",
                 country="Spain",
-                countryCode="ES"
+                countryCode="ES",
             )
             warehouse_data = WarehouseCreate(
-                name="Test Async Get Warehouse",
-                email="asyncget@test.com",
-                address=address
+                name="Test Async Get Warehouse", email="asyncget@test.com", address=address
             )
             created = await async_client.warehouse.create(warehouse_data)
             if isinstance(created, dict) and "id" in created:
                 warehouse_id = created["id"]
                 result = await async_client.warehouse.get(warehouse_id)
-                
+
                 assert result is not None
                 assert isinstance(result, dict)
-                
+
                 # Cleanup
                 try:
                     await async_client.warehouse.delete(warehouse_id)
@@ -400,27 +354,22 @@ class TestAsyncWarehouseResource:
             city="Async Update City",
             postalCode="66666",
             country="Spain",
-            countryCode="ES"
+            countryCode="ES",
         )
         warehouse_data = WarehouseCreate(
-            name="Test Async Update Warehouse",
-            email="asyncupdate@test.com",
-            address=address
+            name="Test Async Update Warehouse", email="asyncupdate@test.com", address=address
         )
-        
+
         created = await async_client.warehouse.create(warehouse_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             warehouse_id = created["id"]
-            
+
             # Update the warehouse
-            update_data = WarehouseUpdate(
-                name="Updated Async Test Warehouse",
-                email="updatedasync@test.com"
-            )
-            
+            update_data = WarehouseUpdate(name="Updated Async Test Warehouse", email="updatedasync@test.com")
+
             result = await async_client.warehouse.update(warehouse_id, update_data)
-            
+
             assert result is not None
             if isinstance(result, dict):
                 # Verify by getting the warehouse
@@ -430,7 +379,7 @@ class TestAsyncWarehouseResource:
                         assert updated_warehouse["name"] == "Updated Async Test Warehouse"
                     elif "email" in updated_warehouse:
                         assert updated_warehouse["email"] == "updatedasync@test.com"
-            
+
             # Cleanup
             try:
                 await async_client.warehouse.delete(warehouse_id)
@@ -446,22 +395,20 @@ class TestAsyncWarehouseResource:
             city="Async Delete City",
             postalCode="77777",
             country="Spain",
-            countryCode="ES"
+            countryCode="ES",
         )
         warehouse_data = WarehouseCreate(
-            name="Test Async Delete Warehouse",
-            email="asyncdelete@test.com",
-            address=address
+            name="Test Async Delete Warehouse", email="asyncdelete@test.com", address=address
         )
-        
+
         created = await async_client.warehouse.create(warehouse_data)
-        
+
         if isinstance(created, dict) and "id" in created:
             warehouse_id = created["id"]
-            
+
             # Delete the warehouse
             result = await async_client.warehouse.delete(warehouse_id)
-            
+
             assert result is not None
             # Verify deletion
             try:
@@ -473,14 +420,14 @@ class TestAsyncWarehouseResource:
     async def test_list_stock(self, async_client):
         """Test listing products stock for a warehouse asynchronously."""
         warehouses = await async_client.warehouse.list()
-        
+
         if isinstance(warehouses, dict) and "items" in warehouses:
             items = warehouses["items"]
         elif isinstance(warehouses, list):
             items = warehouses
         else:
             items = []
-        
+
         if items and len(items) > 0:
             warehouse_id = items[0]["id"]
             try:
@@ -489,4 +436,3 @@ class TestAsyncWarehouseResource:
             except Exception:
                 # Stock endpoint might not be available or return errors
                 pass
-

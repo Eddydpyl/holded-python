@@ -1,6 +1,7 @@
 """
 Tests for the Taxes API.
 """
+
 import pytest
 
 
@@ -10,7 +11,7 @@ class TestTaxesResource:
     def test_list_taxes(self, client):
         """Test listing taxes."""
         result = client.taxes.list()
-        
+
         assert result is not None
         # Result can be a list or dict
         if isinstance(result, dict):
@@ -38,7 +39,7 @@ class TestAsyncTaxesResource:
     async def test_list_taxes(self, async_client):
         """Test listing taxes asynchronously."""
         result = await async_client.taxes.list()
-        
+
         assert result is not None
         if isinstance(result, dict):
             if "items" in result:
@@ -47,4 +48,3 @@ class TestAsyncTaxesResource:
                 assert isinstance(result["data"], list)
         elif isinstance(result, list):
             assert isinstance(result, list)
-

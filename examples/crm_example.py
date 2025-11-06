@@ -2,18 +2,26 @@
 """
 Example script demonstrating how to use the Holded API wrapper for CRM functionality.
 """
-import os
+
 import asyncio
+import os
 from datetime import datetime, timedelta
 from pprint import pprint
 
-from holded.client import HoldedClient
-from holded.async_client import AsyncHoldedClient
-from holded.models.crm import (
-    FunnelCreate, LeadCreate, LeadUpdate, LeadNoteCreate, LeadTaskCreate,
-    EventCreate, BookingLocationCreate, BookingCreate
-)
 from holded.models.contacts import ContactCreate
+from holded.models.crm import (
+    BookingCreate,
+    BookingLocationCreate,
+    EventCreate,
+    FunnelCreate,
+    LeadCreate,
+    LeadNoteCreate,
+    LeadTaskCreate,
+    LeadUpdate,
+)
+
+from holded.async_client import AsyncHoldedClient
+from holded.client import HoldedClient
 from holded.exceptions import HoldedError
 
 
@@ -32,10 +40,7 @@ def sync_example():
         # Create a contact for the CRM examples
         print("\n=== Creating a contact for CRM examples ===")
         contact_data = ContactCreate(
-            name="CRM Example Contact",
-            email="crm.example@example.com",
-            phone="123456789",
-            type="client"
+            name="CRM Example Contact", email="crm.example@example.com", phone="123456789", type="client"
         )
         contact = client.contacts.create(contact_data)
         print(f"Created contact: {contact.name} with ID: {contact.id}")
@@ -45,7 +50,7 @@ def sync_example():
         funnel_data = FunnelCreate(
             name="Example Sales Funnel",
             description="A funnel for example leads",
-            stages=["New", "Contacted", "Qualified", "Proposal", "Negotiation", "Won", "Lost"]
+            stages=["New", "Contacted", "Qualified", "Proposal", "Negotiation", "Won", "Lost"],
         )
         funnel = client.crm.create_funnel(funnel_data)
         print(f"Created funnel: {funnel.get('name')} with ID: {funnel.get('id')}")
@@ -55,28 +60,26 @@ def sync_example():
         lead_data = LeadCreate(
             name="Example Lead",
             contact_id=contact.id,
-            funnel_id=funnel.get('id'),
+            funnel_id=funnel.get("id"),
             stage="New",
             value=1000.0,
             description="This is an example lead",
-            expected_close_date=datetime.now() + timedelta(days=30)
+            expected_close_date=datetime.now() + timedelta(days=30),
         )
         lead = client.crm.create_lead(lead_data)
         print(f"Created lead: {lead.get('name')} with ID: {lead.get('id')}")
 
         # Get the lead details
         print("\n=== Getting lead details ===")
-        lead_details = client.crm.get_lead(lead.get('id'))
-        print(f"Lead details:")
+        lead_details = client.crm.get_lead(lead.get("id"))
+        print("Lead details:")
         pprint(lead_details)
 
         # Add a note to the lead
         print("\n=== Adding a note to the lead ===")
-        note_data = LeadNoteCreate(
-            content="This is an example note for the lead"
-        )
-        note = client.crm.create_lead_note(lead.get('id'), note_data)
-        print(f"Added note to lead")
+        note_data = LeadNoteCreate(content="This is an example note for the lead")
+        client.crm.create_lead_note(lead.get("id"), note_data)
+        print("Added note to lead")
 
         # Add a task to the lead
         print("\n=== Adding a task to the lead ===")
@@ -84,17 +87,15 @@ def sync_example():
             title="Follow up with lead",
             description="Call the lead to discuss their needs",
             due_date=datetime.now() + timedelta(days=2),
-            priority="high"
+            priority="high",
         )
-        task = client.crm.create_lead_task(lead.get('id'), task_data)
+        task = client.crm.create_lead_task(lead.get("id"), task_data)
         print(f"Added task to lead with ID: {task.get('id')}")
 
         # Update the lead stage
         print("\n=== Updating lead stage ===")
-        update_data = LeadUpdate(
-            stage="Contacted"
-        )
-        updated_lead = client.crm.update_lead(lead.get('id'), update_data)
+        update_data = LeadUpdate(stage="Contacted")
+        updated_lead = client.crm.update_lead(lead.get("id"), update_data)
         print(f"Updated lead stage to: {updated_lead.get('stage')}")
 
         # Create an event
@@ -105,7 +106,7 @@ def sync_example():
             start_date=datetime.now() + timedelta(days=1),
             end_date=datetime.now() + timedelta(days=1, hours=1),
             location="Office",
-            lead_id=lead.get('id')
+            lead_id=lead.get("id"),
         )
         event = client.crm.create_event(event_data)
         print(f"Created event: {event.get('title')} with ID: {event.get('id')}")
@@ -121,8 +122,8 @@ def sync_example():
                 "tuesday": ["09:00-12:00", "13:00-17:00"],
                 "wednesday": ["09:00-12:00", "13:00-17:00"],
                 "thursday": ["09:00-12:00", "13:00-17:00"],
-                "friday": ["09:00-12:00", "13:00-17:00"]
-            }
+                "friday": ["09:00-12:00", "13:00-17:00"],
+            },
         )
         location = client.crm.create_booking_location(location_data)
         print(f"Created booking location: {location.get('name')} with ID: {location.get('id')}")
@@ -130,44 +131,41 @@ def sync_example():
         # Get booking slots
         print("\n=== Getting booking slots ===")
         tomorrow = datetime.now() + timedelta(days=1)
-        slots = client.crm.get_booking_location_slots(
-            location.get('id'),
-            date=tomorrow.strftime("%Y-%m-%d")
-        )
+        slots = client.crm.get_booking_location_slots(location.get("id"), date=tomorrow.strftime("%Y-%m-%d"))
         print(f"Available slots for {tomorrow.strftime('%Y-%m-%d')}:")
-        for slot in slots.get('items', [])[:3]:  # Show first 3 slots
+        for slot in slots.get("items", [])[:3]:  # Show first 3 slots
             print(f"- {slot.get('start_time')} to {slot.get('end_time')}")
 
         # Create a booking
         print("\n=== Creating a booking ===")
         booking_data = BookingCreate(
-            location_id=location.get('id'),
+            location_id=location.get("id"),
             date=tomorrow,
             start_time="10:00",
             end_time="11:00",
             title="Meeting with Example Lead",
             description="Follow-up meeting",
-            lead_id=lead.get('id')
+            lead_id=lead.get("id"),
         )
         booking = client.crm.create_booking(booking_data)
         print(f"Created booking with ID: {booking.get('id')}")
 
         # Clean up - delete everything we created
         print("\n=== Cleaning up ===")
-        client.crm.delete_booking(booking.get('id'))
-        print(f"Deleted booking")
-        client.crm.delete_event(event.get('id'))
-        print(f"Deleted event")
-        client.crm.delete_lead(lead.get('id'))
-        print(f"Deleted lead")
-        client.crm.delete_funnel(funnel.get('id'))
-        print(f"Deleted funnel")
+        client.crm.delete_booking(booking.get("id"))
+        print("Deleted booking")
+        client.crm.delete_event(event.get("id"))
+        print("Deleted event")
+        client.crm.delete_lead(lead.get("id"))
+        print("Deleted lead")
+        client.crm.delete_funnel(funnel.get("id"))
+        print("Deleted funnel")
         client.contacts.delete(contact.id)
         print(f"Deleted contact: {contact.name}")
 
     except HoldedError as e:
         print(f"Error: {e.message}")
-        if hasattr(e, 'error_data') and e.error_data:
+        if hasattr(e, "error_data") and e.error_data:
             print(f"Error data: {e.error_data}")
     finally:
         client.close()
@@ -188,10 +186,7 @@ async def async_example():
         # Create a contact for the CRM examples
         print("\n=== Creating a contact for CRM examples (async) ===")
         contact_data = ContactCreate(
-            name="Async CRM Example Contact",
-            email="async.crm.example@example.com",
-            phone="987654321",
-            type="client"
+            name="Async CRM Example Contact", email="async.crm.example@example.com", phone="987654321", type="client"
         )
         contact = await client.contacts.create(contact_data)
         print(f"Created contact: {contact.name} with ID: {contact.id}")
@@ -201,7 +196,7 @@ async def async_example():
         funnel_data = FunnelCreate(
             name="Async Example Sales Funnel",
             description="An async funnel for example leads",
-            stages=["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"]
+            stages=["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"],
         )
         funnel = await client.crm.create_funnel(funnel_data)
         print(f"Created funnel: {funnel.get('name')} with ID: {funnel.get('id')}")
@@ -211,26 +206,26 @@ async def async_example():
         lead_data = LeadCreate(
             name="Async Example Lead",
             contact_id=contact.id,
-            funnel_id=funnel.get('id'),
+            funnel_id=funnel.get("id"),
             stage="New",
             value=2000.0,
-            description="This is an async example lead"
+            description="This is an async example lead",
         )
         lead = await client.crm.create_lead(lead_data)
         print(f"Created lead: {lead.get('name')} with ID: {lead.get('id')}")
 
         # Clean up - delete everything we created
         print("\n=== Cleaning up (async) ===")
-        await client.crm.delete_lead(lead.get('id'))
-        print(f"Deleted lead")
-        await client.crm.delete_funnel(funnel.get('id'))
-        print(f"Deleted funnel")
+        await client.crm.delete_lead(lead.get("id"))
+        print("Deleted lead")
+        await client.crm.delete_funnel(funnel.get("id"))
+        print("Deleted funnel")
         await client.contacts.delete(contact.id)
         print(f"Deleted contact: {contact.name}")
 
     except HoldedError as e:
         print(f"Error: {e.message}")
-        if hasattr(e, 'error_data') and e.error_data:
+        if hasattr(e, "error_data") and e.error_data:
             print(f"Error data: {e.error_data}")
     finally:
         await client.close()
@@ -239,6 +234,6 @@ async def async_example():
 if __name__ == "__main__":
     print("Running synchronous example...")
     sync_example()
-    
+
     print("\nRunning asynchronous example...")
-    asyncio.run(async_example()) 
+    asyncio.run(async_example())
