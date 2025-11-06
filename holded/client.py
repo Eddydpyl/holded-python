@@ -1,6 +1,7 @@
 """
 Synchronous client for the Holded API.
 """
+
 import json
 import logging
 import time
@@ -21,19 +22,30 @@ from .exceptions import (
     HoldedTimeoutError,
     HoldedValidationError,
 )
-from .resources.accounting import AccountingResource
-from .resources.contacts import ContactsResource
-from .resources.crm import CRMResource
-from .resources.documents import DocumentsResource
-from .resources.employees import EmployeesResource
-from .resources.expense_accounts import ExpenseAccountsResource
-from .resources.numbering_series import NumberingSeriesResource
-from .resources.products import ProductsResource
-from .resources.projects import ProjectsResource
-from .resources.remittances import RemittancesResource
-from .resources.sales_channels import SalesChannelsResource
-from .resources.treasury import TreasuryResource
-from .resources.warehouse import WarehouseResource
+from .invoice_api.resources.contacts import ContactsResource
+from .invoice_api.resources.documents import DocumentsResource
+from .invoice_api.resources.expense_accounts import ExpenseAccountsResource
+from .invoice_api.resources.numbering_series import NumberingSeriesResource
+from .invoice_api.resources.payments import PaymentsResource
+from .invoice_api.resources.products import ProductsResource
+from .invoice_api.resources.remittances import RemittancesResource
+from .invoice_api.resources.sales_channels import SalesChannelsResource
+from .invoice_api.resources.contact_groups import ContactGroupsResource
+from .invoice_api.resources.services import ServicesResource
+from .invoice_api.resources.taxes import TaxesResource
+from .invoice_api.resources.treasury import TreasuryResource
+from .invoice_api.resources.warehouse import WarehouseResource
+from .crm_api.resources.funnels import FunnelsResource
+from .crm_api.resources.leads import LeadsResource
+from .crm_api.resources.events import EventsResource
+from .crm_api.resources.bookings import BookingsResource
+from .projects_api.resources.projects import ProjectsResource
+from .projects_api.resources.tasks import TasksResource
+from .projects_api.resources.time_tracking import TimeTrackingResource
+from .team_api.resources.employees import EmployeesResource
+from .team_api.resources.employee_time_tracking import EmployeeTimeTrackingResource
+from .accounting_api.resources.daily_ledger import DailyLedgerResource
+from .accounting_api.resources.chart_of_accounts import ChartOfAccountsResource
 
 logger = logging.getLogger(__name__)
 
@@ -83,14 +95,25 @@ class HoldedClient:
         self.products = ProductsResource(self)
         self.warehouse = WarehouseResource(self)
         self.treasury = TreasuryResource(self)
-        self.accounting = AccountingResource(self)
-        self.employees = EmployeesResource(self)
-        self.projects = ProjectsResource(self)
-        self.crm = CRMResource(self)
         self.sales_channels = SalesChannelsResource(self)
         self.numbering_series = NumberingSeriesResource(self)
         self.expense_accounts = ExpenseAccountsResource(self)
         self.remittances = RemittancesResource(self)
+        self.payments = PaymentsResource(self)
+        self.taxes = TaxesResource(self)
+        self.contact_groups = ContactGroupsResource(self)
+        self.services = ServicesResource(self)
+        self.funnels = FunnelsResource(self)
+        self.leads = LeadsResource(self)
+        self.events = EventsResource(self)
+        self.bookings = BookingsResource(self)
+        self.projects = ProjectsResource(self)
+        self.tasks = TasksResource(self)
+        self.time_tracking = TimeTrackingResource(self)
+        self.employees = EmployeesResource(self)
+        self.employee_time_tracking = EmployeeTimeTrackingResource(self)
+        self.daily_ledger = DailyLedgerResource(self)
+        self.chart_of_accounts = ChartOfAccountsResource(self)
 
     def _build_url(self, path: str) -> str:
         """Build the URL for the API request.
@@ -105,8 +128,10 @@ class HoldedClient:
         service = values[0]
         endpoint = values[1]
         extra = values[2:]
-        print(self.base_url  + service + "/" + self.api_version + "/" + endpoint + "/" + "/".join(extra))
-        return urljoin(self.base_url, service + "/" + self.api_version + "/" + endpoint + "/" + "/".join(extra))
+        return urljoin(
+            self.base_url,
+            service + "/" + self.api_version + "/" + endpoint + "/" + "/".join(extra),
+        )
 
     def _serialize_data(self, data: Union[Dict[str, Any], BaseModel]) -> Dict[str, Any]:
         """Serialize data for a request.
@@ -236,11 +261,11 @@ class HoldedClient:
             HoldedError: For other errors.
         """
         url = self._build_url(path)
-        
+
         # Serialize params and data if they are Pydantic models
         if params is not None and isinstance(params, BaseModel):
             params = params.model_dump(exclude_none=True)
-        
+
         if data is not None:
             data = self._serialize_data(data)
             data_str = json.dumps(data)
@@ -257,7 +282,10 @@ class HoldedClient:
                     timeout=self.timeout,
                 )
                 return self._handle_response(response, response_model)
-            except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as e:
+            except (
+                requests.exceptions.ConnectionError,
+                requests.exceptions.SSLError,
+            ) as e:
                 if attempt == self.max_retries - 1:
                     raise HoldedConnectionError(
                         message=f"Connection error: {str(e)}"
@@ -314,7 +342,9 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request("POST", path, params=params, data=data, response_model=response_model)
+        return self._request(
+            "POST", path, params=params, data=data, response_model=response_model
+        )
 
     def put(
         self,
@@ -334,7 +364,9 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request("PUT", path, params=params, data=data, response_model=response_model)
+        return self._request(
+            "PUT", path, params=params, data=data, response_model=response_model
+        )
 
     def delete(
         self,
@@ -352,8 +384,10 @@ class HoldedClient:
         Returns:
             The response data.
         """
-        return self._request("DELETE", path, params=params, response_model=response_model)
+        return self._request(
+            "DELETE", path, params=params, response_model=response_model
+        )
 
     def close(self) -> None:
         """Close the client session."""
-        self.session.close() 
+        self.session.close()

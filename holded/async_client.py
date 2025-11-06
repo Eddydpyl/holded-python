@@ -1,6 +1,7 @@
 """
 Asynchronous client for the Holded API.
 """
+
 import json
 import logging
 import asyncio
@@ -8,7 +9,7 @@ from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 from urllib.parse import urljoin
 
 import aiohttp
-from aiohttp import ClientError, ClientTimeout
+from aiohttp import ClientTimeout
 from pydantic import BaseModel
 
 from .exceptions import (
@@ -22,19 +23,30 @@ from .exceptions import (
     HoldedTimeoutError,
     HoldedValidationError,
 )
-from .resources.async_accounting import AsyncAccountingResource
-from .resources.async_contacts import AsyncContactsResource
-from .resources.async_crm import AsyncCRMResource
-from .resources.async_documents import AsyncDocumentsResource
-from .resources.async_employees import AsyncEmployeesResource
-from .resources.async_expense_accounts import AsyncExpenseAccountsResource
-from .resources.async_numbering_series import AsyncNumberingSeriesResource
-from .resources.async_products import AsyncProductsResource
-from .resources.async_projects import AsyncProjectsResource
-from .resources.async_remittances import AsyncRemittancesResource
-from .resources.async_sales_channels import AsyncSalesChannelsResource
-from .resources.async_treasury import AsyncTreasuryResource
-from .resources.async_warehouse import AsyncWarehouseResource
+from .invoice_api.resources.async_contacts import AsyncContactsResource
+from .invoice_api.resources.async_documents import AsyncDocumentsResource
+from .invoice_api.resources.async_expense_accounts import AsyncExpenseAccountsResource
+from .invoice_api.resources.async_numbering_series import AsyncNumberingSeriesResource
+from .invoice_api.resources.async_payments import AsyncPaymentsResource
+from .invoice_api.resources.async_products import AsyncProductsResource
+from .invoice_api.resources.async_remittances import AsyncRemittancesResource
+from .invoice_api.resources.async_sales_channels import AsyncSalesChannelsResource
+from .invoice_api.resources.async_contact_groups import AsyncContactGroupsResource
+from .invoice_api.resources.async_services import AsyncServicesResource
+from .invoice_api.resources.async_taxes import AsyncTaxesResource
+from .invoice_api.resources.async_treasury import AsyncTreasuryResource
+from .invoice_api.resources.async_warehouse import AsyncWarehouseResource
+from .crm_api.resources.async_funnels import AsyncFunnelsResource
+from .crm_api.resources.async_leads import AsyncLeadsResource
+from .crm_api.resources.async_events import AsyncEventsResource
+from .crm_api.resources.async_bookings import AsyncBookingsResource
+from .projects_api.resources.async_projects import AsyncProjectsResource
+from .projects_api.resources.async_tasks import AsyncTasksResource
+from .projects_api.resources.async_time_tracking import AsyncTimeTrackingResource
+from .team_api.resources.async_employees import AsyncEmployeesResource
+from .team_api.resources.async_employee_time_tracking import AsyncEmployeeTimeTrackingResource
+from .accounting_api.resources.async_daily_ledger import AsyncDailyLedgerResource
+from .accounting_api.resources.async_chart_of_accounts import AsyncChartOfAccountsResource
 
 logger = logging.getLogger(__name__)
 
@@ -85,14 +97,25 @@ class AsyncHoldedClient:
         self.products = AsyncProductsResource(self)
         self.warehouse = AsyncWarehouseResource(self)
         self.treasury = AsyncTreasuryResource(self)
-        self.accounting = AsyncAccountingResource(self)
-        self.employees = AsyncEmployeesResource(self)
-        self.projects = AsyncProjectsResource(self)
-        self.crm = AsyncCRMResource(self)
         self.sales_channels = AsyncSalesChannelsResource(self)
         self.numbering_series = AsyncNumberingSeriesResource(self)
         self.expense_accounts = AsyncExpenseAccountsResource(self)
         self.remittances = AsyncRemittancesResource(self)
+        self.payments = AsyncPaymentsResource(self)
+        self.taxes = AsyncTaxesResource(self)
+        self.contact_groups = AsyncContactGroupsResource(self)
+        self.services = AsyncServicesResource(self)
+        self.funnels = AsyncFunnelsResource(self)
+        self.leads = AsyncLeadsResource(self)
+        self.events = AsyncEventsResource(self)
+        self.bookings = AsyncBookingsResource(self)
+        self.projects = AsyncProjectsResource(self)
+        self.tasks = AsyncTasksResource(self)
+        self.time_tracking = AsyncTimeTrackingResource(self)
+        self.employees = AsyncEmployeesResource(self)
+        self.employee_time_tracking = AsyncEmployeeTimeTrackingResource(self)
+        self.daily_ledger = AsyncDailyLedgerResource(self)
+        self.chart_of_accounts = AsyncChartOfAccountsResource(self)
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """
@@ -123,7 +146,10 @@ class AsyncHoldedClient:
         service = values[0]
         endpoint = values[1]
         extra = values[2:]
-        return urljoin(self.base_url, service + "/" + self.api_version + "/" + endpoint + "/" + "/".join(extra))
+        return urljoin(
+            self.base_url,
+            service + "/" + self.api_version + "/" + endpoint + "/" + "/".join(extra),
+        )
 
     def _serialize_data(self, data: Union[Dict[str, Any], BaseModel]) -> Dict[str, Any]:
         """
@@ -173,22 +199,36 @@ class AsyncHoldedClient:
                 except json.JSONDecodeError:
                     data = {"message": text}
         except Exception as e:
-            raise HoldedAPIError(f"Failed to parse response: {str(e)}", status_code=status_code)
+            raise HoldedAPIError(
+                f"Failed to parse response: {str(e)}", status_code=status_code
+            )
 
         if status_code >= 400:
             error_message = data.get("message", str(data))
             if status_code == 401:
-                raise HoldedAuthError(error_message, status_code=status_code, error_data=data)
+                raise HoldedAuthError(
+                    error_message, status_code=status_code, error_data=data
+                )
             elif status_code == 404:
-                raise HoldedNotFoundError(error_message, status_code=status_code, error_data=data)
+                raise HoldedNotFoundError(
+                    error_message, status_code=status_code, error_data=data
+                )
             elif status_code == 422:
-                raise HoldedValidationError(error_message, status_code=status_code, error_data=data)
+                raise HoldedValidationError(
+                    error_message, status_code=status_code, error_data=data
+                )
             elif status_code == 429:
-                raise HoldedRateLimitError(error_message, status_code=status_code, error_data=data)
+                raise HoldedRateLimitError(
+                    error_message, status_code=status_code, error_data=data
+                )
             elif status_code >= 500:
-                raise HoldedServerError(error_message, status_code=status_code, error_data=data)
+                raise HoldedServerError(
+                    error_message, status_code=status_code, error_data=data
+                )
             else:
-                raise HoldedAPIError(error_message, status_code=status_code, error_data=data)
+                raise HoldedAPIError(
+                    error_message, status_code=status_code, error_data=data
+                )
 
         if response_model is not None:
             return response_model.model_validate(data)
@@ -198,7 +238,7 @@ class AsyncHoldedClient:
         self,
         method: str,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Union[Dict[str, Any], BaseModel]] = None,
         data: Optional[Union[Dict[str, Any], BaseModel]] = None,
         response_model: Optional[Type[T]] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]], T]:
@@ -222,7 +262,11 @@ class AsyncHoldedClient:
         """
         url = self._build_url(path)
         session = await self._get_session()
-        
+
+        # Serialize params and data if they are Pydantic models
+        if params is not None and isinstance(params, BaseModel):
+            params = params.model_dump(exclude_none=True)
+
         if data is not None:
             data = self._serialize_data(data)
 
@@ -238,7 +282,7 @@ class AsyncHoldedClient:
                     return await self._handle_response(response, response_model)
             except (HoldedRateLimitError, HoldedServerError) as e:
                 if attempt < self.max_retries - 1:
-                    wait_time = self.retry_delay * (2 ** attempt)
+                    wait_time = self.retry_delay * (2**attempt)
                     logger.warning(
                         f"Request failed with {e.__class__.__name__}. "
                         f"Retrying in {wait_time} seconds..."
@@ -258,7 +302,7 @@ class AsyncHoldedClient:
     async def get(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Union[Dict[str, Any], BaseModel]] = None,
         response_model: Optional[Type[T]] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]], T]:
         """
@@ -272,13 +316,15 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request("GET", path, params=params, response_model=response_model)
+        return await self.request(
+            "GET", path, params=params, response_model=response_model
+        )
 
     async def post(
         self,
         path: str,
         data: Optional[Union[Dict[str, Any], BaseModel]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Union[Dict[str, Any], BaseModel]] = None,
         response_model: Optional[Type[T]] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]], T]:
         """
@@ -293,13 +339,15 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request("POST", path, params=params, data=data, response_model=response_model)
+        return await self.request(
+            "POST", path, params=params, data=data, response_model=response_model
+        )
 
     async def put(
         self,
         path: str,
         data: Optional[Union[Dict[str, Any], BaseModel]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Union[Dict[str, Any], BaseModel]] = None,
         response_model: Optional[Type[T]] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]], T]:
         """
@@ -314,12 +362,14 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request("PUT", path, params=params, data=data, response_model=response_model)
+        return await self.request(
+            "PUT", path, params=params, data=data, response_model=response_model
+        )
 
     async def delete(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: Optional[Union[Dict[str, Any], BaseModel]] = None,
         response_model: Optional[Type[T]] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]], T]:
         """
@@ -333,11 +383,13 @@ class AsyncHoldedClient:
         Returns:
             The parsed JSON response
         """
-        return await self.request("DELETE", path, params=params, response_model=response_model)
+        return await self.request(
+            "DELETE", path, params=params, response_model=response_model
+        )
 
     async def close(self) -> None:
         """
         Close the aiohttp session.
         """
         if self.session and not self.session.closed:
-            await self.session.close() 
+            await self.session.close()

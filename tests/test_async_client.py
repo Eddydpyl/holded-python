@@ -39,8 +39,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test GET request."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"id": "123", "name": "Test"})
+        async def mock_json():
+            return {"id": "123", "name": "Test"}
+        mock_response.json = mock_json
         mock_response.status = 200
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method
@@ -56,8 +59,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test POST request."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"id": "123", "name": "Test"})
+        async def mock_json():
+            return {"id": "123", "name": "Test"}
+        mock_response.json = mock_json
         mock_response.status = 200
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method
@@ -74,8 +80,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test PUT request."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"id": "123", "name": "Updated"})
+        async def mock_json():
+            return {"id": "123", "name": "Updated"}
+        mock_response.json = mock_json
         mock_response.status = 200
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method
@@ -92,8 +101,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test DELETE request."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"success": True})
+        async def mock_json():
+            return {"success": True}
+        mock_response.json = mock_json
         mock_response.status = 200
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method
@@ -109,8 +121,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test authentication error."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"error": "Invalid API key"})
+        async def mock_json():
+            return {"error": "Invalid API key"}
+        mock_response.json = mock_json
         mock_response.status = 401
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method and assert exception
@@ -122,8 +137,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test not found error."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"error": "Resource not found"})
+        async def mock_json():
+            return {"error": "Resource not found"}
+        mock_response.json = mock_json
         mock_response.status = 404
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method and assert exception
@@ -135,8 +153,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test validation error."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"error": "Validation failed"})
+        async def mock_json():
+            return {"error": "Validation failed"}
+        mock_response.json = mock_json
         mock_response.status = 422
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method and assert exception
@@ -148,8 +169,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test rate limit error."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"error": "Rate limit exceeded"})
+        async def mock_json():
+            return {"error": "Rate limit exceeded"}
+        mock_response.json = mock_json
         mock_response.status = 429
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method and assert exception
@@ -161,8 +185,11 @@ class TestAsyncHoldedClient(unittest.TestCase):
         """Test server error."""
         # Setup mock
         mock_response = MagicMock()
-        mock_response.json = asyncio.coroutine(lambda: {"error": "Internal server error"})
+        async def mock_json():
+            return {"error": "Internal server error"}
+        mock_response.json = mock_json
         mock_response.status = 500
+        mock_response.headers = {"Content-Type": "application/json"}
         mock_request.return_value.__aenter__.return_value = mock_response
 
         # Call method and assert exception
