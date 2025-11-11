@@ -6,20 +6,43 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Field, field_validator
+from pydantic import ConfigDict, Field, field_validator
+
+
+def to_camel(string: str) -> str:
+    """Convert snake_case strings to camelCase."""
+    parts = string.split("_")
+    if len(parts) == 1:
+        return string
+
+    first, *rest = parts
+    rest_transformed = [
+        segment.capitalize() if segment else "_"
+        for segment in rest
+    ]
+    return first + "".join(rest_transformed)
 
 
 class BaseModel(PydanticBaseModel):
     """Base model for all Holded API models."""
 
-    class Config:
-        """Pydantic configuration."""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        alias_generator=to_camel,
+        serialization_alias_generator=to_camel,
+        json_encoders={datetime: lambda dt: dt.isoformat()},
+    )
 
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
-            datetime: lambda dt: dt.isoformat(),
-        }
+    def model_dump(self, *args, **kwargs):
+        """Ensure camelCase aliases are used when dumping models."""
+        kwargs.setdefault("by_alias", True)
+        return super().model_dump(*args, **kwargs)
+
+    def model_dump_json(self, *args, **kwargs):
+        """Ensure camelCase aliases are used when dumping models to JSON."""
+        kwargs.setdefault("by_alias", True)
+        return super().model_dump_json(*args, **kwargs)
 
 
 class BaseResponse(BaseModel):
